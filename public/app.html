@@ -338,7 +338,7 @@ body::before {
   display:flex; flex-direction:column; height:100%; min-height:280px;
 }
 .roast-messages {
-  flex:1; overflow-y:auto; display:flex; flex-direction:column;
+  height:240px; overflow-y:auto; display:flex; flex-direction:column;
   gap:10px; padding:4px 0 8px; scroll-behavior:smooth;
 }
 .roast-avatar {
@@ -1153,21 +1153,17 @@ async function roastSendMessage(userText) {
   await new Promise(r => setTimeout(r, 900 + Math.random()*600));
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/roast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 180,
-        system: `You are a witty, savage but fun music critic roasting someone's Spotify taste in a chat. 
-Be specific — mention actual artist names. Short punchy replies, like texting.
-Write in ${roastLangName}. No hashtags. No emojis. Max 2 sentences per reply.
-Their top artists: ${roastArtists.join(', ')}.`,
-        messages: roastHistory
+        messages: roastHistory,
+        artists: roastArtists,
+        lang: roastLang
       })
     });
     const data = await res.json();
-    const reply = data.content?.[0]?.text || '';
+    const reply = data.reply || '';
     roastHideTyping();
     roastAddBubble(reply, false);
     roastHistory.push({ role: 'assistant', content: reply });

@@ -9,7 +9,7 @@ const PORT = 3000;
 
 const CLIENT_ID     = 'ccaabd097b914790934ac89fbaddd9ce';
 const CLIENT_SECRET = 'bf71b2541d944fdda09d841c00d7daed';
-const REDIRECT_URI  = process.env.REDIRECT_URI || 'http://127.0.0.1:3000/callback';
+const REDIRECT_URI  = process.env.REDIRECT_URI || 'https://lineapp.club/auth/callback';
 
 app.use(cors());
 app.use(express.json());
@@ -123,6 +123,40 @@ app.get('/api/concerts', async (req, res) => {
 
   results.sort((a, b) => new Date(a.date) - new Date(b.date));
   res.json(results.slice(0, 12));
+});
+
+
+// 6. Roast — Claude AI
+const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
+
+app.post('/api/roast', async (req, res) => {
+  const { messages, artists, lang } = req.body;
+  if (!messages || !artists) return res.status(400).json({ error: 'Missing data' });
+
+  const langName = lang === 'es' ? 'Spanish' : lang === 'pt' ? 'Portuguese' : 'English';
+
+  try {
+    const r = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 180,
+      system: `You are a savage, witty, irreverent music critic roasting someone's Spotify taste in a chat. 
+Be VERY specific — mention actual artist names and roast the weird or contradictory combinations brutally but playfully.
+Short punchy replies, like texting a friend. Max 2 sentences. 
+Write in ${langName}. No hashtags. No emojis. Be surprising and creative each time — never repeat the same reply.
+Their top artists: ${artists.join(', ')}.`,
+      messages
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+    res.json({ reply: r.data.content?.[0]?.text || '' });
+  } catch(err) {
+    console.error('Roast error:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Roast failed' });
+  }
 });
 
 app.listen(PORT, () => console.log(`\n🎵 LineApp en http://127.0.0.1:${PORT}\n`));
