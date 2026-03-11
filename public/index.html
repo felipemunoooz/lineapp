@@ -7,6 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Mono:ital@0;1&family=Cormorant:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 <style>
+@font-face {
+  font-family: 'AaltoDisplay';
+  src: url('/aalto-display.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
 :root {
   --bg:    #583EFF;
   --cream: #FFF9DA;
@@ -169,10 +175,10 @@ nav {
   font-family:'Bebas Neue',sans-serif; font-size:60px; line-height:1;
   color:rgba(255,249,218,.06); margin-bottom:14px;
 }
-.step-title { font-weight:800; font-size:17px; margin-bottom:8px; }
+.step-title { font-family:'AaltoDisplay', 'Bebas Neue', sans-serif; font-size:26px; margin-bottom:8px; font-weight:400; }
 .step-desc { font-size:13px; line-height:1.75; color:rgba(255,249,218,.48); }
 .preview-wrap {
-  background:#1a1a2e; padding:80px 40px 110px;
+  background:rgba(0,0,0,.28); padding:80px 40px 110px;
   text-align:center;
 }
 .p-title {
