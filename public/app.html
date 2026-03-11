@@ -1167,7 +1167,7 @@ async function buildGenrePanel() {
 
   // Rarity label
   const rarityLabel = stats.rarityScore > 70
-    ? (isEs ? 'Raro raro' : 'Truly rare')
+    ? (isEs ? 'Muy raro' : 'Truly rare')
     : stats.rarityScore > 45
     ? (isEs ? 'Alternativo' : 'Alternative')
     : (isEs ? 'Mainstream' : 'Mainstream');
@@ -1187,7 +1187,7 @@ async function buildGenrePanel() {
     },
     {
       icon: boltSvg, label: 'Energía del lineup',
-      value: stats.heavyCount > 2 ? 'Mosh pit garantizado' : stats.mainstreamCount > 3 ? 'Singalong seguro' : 'Viaje emocional',
+      value: stats.heavyCount > 2 ? 'Mosh pit' : stats.mainstreamCount > 3 ? 'Singalong' : 'Viaje emocional',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} artistas de fosa, ${stats.mainstreamCount} de escenario principal` : `${insightsArtists.length} artistas, ${stats.uniqueGenres} estados de ánimo`,
     }
   ] : [
@@ -1198,7 +1198,7 @@ async function buildGenrePanel() {
     },
     {
       icon: boltSvg, label: 'Lineup Energy',
-      value: stats.heavyCount > 2 ? 'Mosh pit guaranteed' : stats.mainstreamCount > 3 ? 'Singalong for sure' : 'Emotional journey',
+      value: stats.heavyCount > 2 ? 'Mosh pit' : stats.mainstreamCount > 3 ? 'Singalong' : 'Emotional journey',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} pit artists, ${stats.mainstreamCount} main stage` : `${insightsArtists.length} artists, ${stats.uniqueGenres} moods`,
     }
   ];
