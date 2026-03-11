@@ -1185,23 +1185,23 @@ async function buildGenrePanel() {
 
   const insights = isEs ? [
     {
-      icon: diamondSvg, label: 'Rareza de gusto',
+      icon: diamondSvg, label: 'Rareza',
       value: rarityLabel,
       sub: stats.rarityScore > 60 ? 'Tu lineup no lo haría nadie más' : 'Reconocible pero con carácter propio',
     },
     {
-      icon: boltSvg, label: 'Energía del lineup',
+      icon: boltSvg, label: 'Energía',
       value: stats.heavyCount > 2 ? 'Mosh pit' : stats.mainstreamCount > 3 ? 'Singalong' : 'Viaje emocional',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} artistas de fosa, ${stats.mainstreamCount} de escenario principal` : `${insightsArtists.length} artistas, ${stats.uniqueGenres} estados de ánimo`,
     }
   ] : [
     {
-      icon: diamondSvg, label: 'Taste Rarity',
+      icon: diamondSvg, label: 'Rareza',
       value: rarityLabel,
       sub: stats.rarityScore > 60 ? 'Nobody else would make this lineup' : 'Recognizable but with character',
     },
     {
-      icon: boltSvg, label: 'Lineup Energy',
+      icon: boltSvg, label: 'Energía',
       value: stats.heavyCount > 2 ? 'Mosh pit' : stats.mainstreamCount > 3 ? 'Singalong' : 'Emotional journey',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} pit artists, ${stats.mainstreamCount} main stage` : `${insightsArtists.length} artists, ${stats.uniqueGenres} moods`,
     }
