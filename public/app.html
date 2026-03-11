@@ -177,12 +177,12 @@ body::before {
 .chip img { width:26px; height:26px; border-radius:50%; object-fit:cover; }
 .chip-name { font-size:12px; font-weight:700; color:var(--cream); }
 .btn-logout { display:flex; align-items:center; gap:6px;
-  background:var(--cream); border:none;
-  border-radius:100px; padding:7px 16px; color:#1a1a2e;
-  font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
-  letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:all .2s;
+  background:none; border:none; padding:4px 0;
+  color:var(--cream); font-family:'DM Mono',monospace;
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; transition:color .2s;
 }
-.btn-logout:hover { background:#fff; }
+.btn-logout:hover { color:#fff; }
 
 .layout {
   flex:1;
