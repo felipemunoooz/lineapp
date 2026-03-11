@@ -176,7 +176,7 @@ body::before {
 }
 .chip img { width:26px; height:26px; border-radius:50%; object-fit:cover; }
 .chip-name { font-size:12px; font-weight:700; color:var(--cream); }
-.btn-logout {
+.btn-logout { display:flex; align-items:center; gap:6px;
   background:var(--glass-bg); border:1px solid var(--glass-border);
   border-radius:100px; padding:7px 16px; color:rgba(255,249,218,.6);
   font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
@@ -411,8 +411,8 @@ body::before {
 }
 @media (max-width:480px) {
   .topbar-logo svg { height:24px; }
-  .chip-name { display:none; }
-  .btn-logout { padding:6px 14px; font-size:11px; gap:5px; }
+  .chip-name { display:block; font-size:11px; }
+  .btn-logout { display:flex; align-items:center; gap:6px; padding:6px 14px; font-size:11px; gap:5px; }
   .topbar { padding:0 16px; }
   .topbar-right { gap:8px; }
 }
