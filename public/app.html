@@ -333,6 +333,22 @@ body::before {
   font-family:'DM Mono',monospace; letter-spacing:.5px;
 }
 
+/* ── Roast card ── */
+.roast-text {
+  font-family:'Syne', sans-serif; font-size:13px; line-height:1.75;
+  color:#1a1a2e; padding:4px 0;
+}
+.roast-loading {
+  display:flex; align-items:center; gap:10px;
+  font-family:'DM Mono', monospace; font-size:11px;
+  color:rgba(88,62,255,.4); letter-spacing:.5px;
+}
+.roast-loading::before {
+  content:''; width:16px; height:16px; border-radius:50%;
+  border:2px solid rgba(88,62,255,.15); border-top-color:rgba(88,62,255,.5);
+  animation:rspin 1s linear infinite; flex-shrink:0;
+}
+
 /* ── City autocomplete ── */
 .city-ac-wrap { position:relative; flex:1; }
 .city-locate-btn {
@@ -508,8 +524,8 @@ body::before {
         <button class="tpill" onclick="setRange('long_term',this)">Todo el tiempo</button>
       </div>
       <div class="card">
-        <div class="card-label">Tu perfil musical</div>
-        <div id="genreDiv"><div class="empty">Cargando géneros...</div></div>
+        <div class="card-label" id="roastLabel">Tu perfil musical</div>
+        <div id="genreDiv"><div class="empty">Analizando tu música...</div></div>
       </div>
       <div class="card card-fill">
         <div class="card-label">Conciertos cercanos</div>
@@ -1030,18 +1046,43 @@ function buildAll() {
 
 
 
-function buildGenrePanel() {
-  const counts = {};
-  artists.forEach(a => a.genres.forEach(g => { counts[g] = (counts[g]||0)+1; }));
-  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const max = top[0]?.[1] || 1;
-  document.getElementById('genreDiv').innerHTML = top.map(([g,c]) => `
-    <div class="g-row">
-      <div class="g-top"><span>${g}</span><span>${Math.round((c/artists.length)*100)}%</span></div>
-      <div class="g-bg"><div class="g-fill" style="width:0%" data-w="${(c/max)*100}"></div></div>
-    </div>
-  `).join('');
-  setTimeout(() => document.querySelectorAll('.g-fill').forEach(b => b.style.width = b.dataset.w+'%'), 100);
+async function buildGenrePanel() {
+  const el = document.getElementById('genreDiv');
+  const labelEl = document.getElementById('roastLabel');
+
+  // Detect language
+  const lang = navigator.language || 'es';
+  const isEs = lang.startsWith('es');
+  const isPt = lang.startsWith('pt');
+  const langName = isEs ? 'Spanish' : isPt ? 'Portuguese' : 'English';
+
+  labelEl.textContent = isEs ? 'Tu roast musical 🔥' : isPt ? 'Seu roast musical 🔥' : 'Your music roast 🔥';
+  el.innerHTML = `<div class="roast-loading">${isEs ? 'Analizando tu gusto musical...' : isPt ? 'Analisando seu gosto musical...' : 'Analyzing your music taste...'}</div>`;
+
+  const topArtists = artists.slice(0, 12).map(a => a.name);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: `You are a witty music critic who roasts people's music taste in a fun, playful, non-offensive way. 
+Write a short roast (2-3 sentences max) about someone who listens to these artists: ${topArtists.join(', ')}.
+Be funny and specific about the contrast or weirdness of their taste. 
+Write in ${langName}. No hashtags. No emojis. Just witty text. Don't start with "Oh" or "Wow".`
+        }]
+      })
+    });
+    const data = await res.json();
+    const roast = data.content?.[0]?.text || '';
+    el.innerHTML = `<div class="roast-text">"${roast}"</div>`;
+  } catch(e) {
+    el.innerHTML = `<div class="roast-text">${isEs ? 'Tu gusto musical es... único. Digámoslo así.' : 'Your music taste is... unique. Let's leave it at that.'}</div>`;
+  }
 }
 
 async function fetchConcerts(city) {
