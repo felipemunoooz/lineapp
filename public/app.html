@@ -333,68 +333,83 @@ body::before {
   font-family:'DM Mono',monospace; letter-spacing:.5px;
 }
 
-/* ── Roast chat card ── */
-.roast-card-inner {
-  display:flex; flex-direction:column; height:100%; min-height:280px;
+/* ── Music Insights card ── */
+.insights-wrap { display:flex; flex-direction:column; gap:10px; }
+.insight-item {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(88,62,255,.05); border-radius:14px;
+  padding:12px 14px; transition:background .2s; animation:insightIn .35s ease both;
 }
-.roast-messages {
-  height:240px; overflow-y:auto; display:flex; flex-direction:column;
-  gap:10px; padding:4px 0 8px; scroll-behavior:smooth;
+.insight-item:hover { background:rgba(88,62,255,.09); }
+@keyframes insightIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.insight-icon {
+  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  background:rgba(88,62,255,.1);
+  display:flex; align-items:center; justify-content:center; font-size:16px;
 }
-.roast-avatar {
-  width:28px; height:28px; border-radius:50%; flex-shrink:0;
-  background:linear-gradient(135deg,#583EFF,#FF3E8A);
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px;
+.insight-body { flex:1; min-width:0; }
+.insight-label {
+  font-family:'DM Mono', monospace; font-size:9px; letter-spacing:1.5px;
+  text-transform:uppercase; color:rgba(88,62,255,.45); margin-bottom:2px;
 }
-.roast-bubble-wrap {
-  display:flex; align-items:flex-end; gap:8px;
+.insight-value {
+  font-family:'Syne', sans-serif; font-weight:800; font-size:13.5px;
+  color:#1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.roast-bubble-wrap.user { flex-direction:row-reverse; }
-.roast-bubble {
-  background:rgba(88,62,255,.08); border-radius:18px 18px 18px 4px;
-  padding:10px 14px; max-width:calc(100% - 40px);
-  font-family:'Syne', sans-serif; font-size:12.5px; line-height:1.65;
-  color:#1a1a2e; animation:bubbleIn .25s ease;
+.insight-sub {
+  font-family:'DM Mono', monospace; font-size:10px;
+  color:rgba(26,26,46,.4); margin-top:1px; line-height:1.4;
 }
-.roast-bubble.user {
-  background:linear-gradient(135deg,#583EFF,#7B5FFF);
-  border-radius:18px 18px 4px 18px; color:#fff;
+.insight-badge {
+  font-family:'Syne', sans-serif; font-weight:800; font-size:11px;
+  padding:3px 9px; border-radius:100px; flex-shrink:0;
 }
-@keyframes bubbleIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-.roast-typing-wrap { display:flex; align-items:flex-end; gap:8px; }
-.roast-typing {
-  display:flex; align-items:center; gap:4px;
-  background:rgba(88,62,255,.08); border-radius:18px 18px 18px 4px;
-  padding:12px 16px;
+.badge-high { background:rgba(255,62,138,.12); color:#FF3E8A; }
+.badge-mid  { background:rgba(88,62,255,.1);   color:#583EFF; }
+.badge-low  { background:rgba(26,26,46,.07);   color:rgba(26,26,46,.5); }
+
+.roast-final {
+  margin-top:4px;
+  background:linear-gradient(135deg,rgba(88,62,255,.08),rgba(255,62,138,.06));
+  border:1px solid rgba(88,62,255,.12); border-radius:16px; padding:16px;
+  animation:insightIn .4s .2s ease both;
 }
-.roast-typing span {
-  width:6px; height:6px; border-radius:50%;
-  background:rgba(88,62,255,.4); animation:roastBounce 1.2s infinite;
+.roast-final-label {
+  font-family:'DM Mono', monospace; font-size:9px; letter-spacing:2px;
+  text-transform:uppercase; color:rgba(255,62,138,.6); margin-bottom:8px;
+  display:flex; align-items:center; gap:6px;
 }
-.roast-typing span:nth-child(2) { animation-delay:.2s; }
-.roast-typing span:nth-child(3) { animation-delay:.4s; }
-@keyframes roastBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-.roast-input-row {
-  display:flex; gap:8px; align-items:center;
-  border-top:1px solid rgba(88,62,255,.08); padding-top:10px; margin-top:4px;
+.roast-final-label::before { content:''; width:16px; height:1px; background:rgba(255,62,138,.3); }
+.roast-final-text {
+  font-family:'Syne', sans-serif; font-weight:700; font-size:13px; line-height:1.65;
+  color:#1a1a2e;
 }
-.roast-input {
-  flex:1; background:rgba(88,62,255,.05); border:1px solid rgba(88,62,255,.1);
-  border-radius:100px; padding:8px 14px;
-  font-family:'Syne', sans-serif; font-size:12px; color:#1a1a2e;
-  outline:none; transition:border-color .2s;
+.insights-loading {
+  display:flex; flex-direction:column; gap:8px; padding:4px 0;
 }
-.roast-input:focus { border-color:rgba(88,62,255,.3); }
-.roast-input::placeholder { color:rgba(88,62,255,.3); }
-.roast-send {
-  width:34px; height:34px; border-radius:50%; border:none; cursor:pointer;
-  background:linear-gradient(135deg,#583EFF,#7B5FFF);
-  display:flex; align-items:center; justify-content:center;
-  flex-shrink:0; transition:opacity .2s;
+.insights-skel {
+  height:60px; border-radius:14px;
+  background:linear-gradient(90deg,rgba(88,62,255,.05) 25%,rgba(88,62,255,.1) 50%,rgba(88,62,255,.05) 75%);
+  background-size:200% 100%; animation:skelShimmer 1.4s infinite;
 }
-.roast-send:disabled { opacity:.4; cursor:default; }
-.roast-send svg { color:#fff; }
+@keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.insights-actions {
+  display:flex; gap:8px; margin-top:4px; animation:insightIn .4s .3s ease both;
+}
+.insights-btn {
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  border-radius:100px; padding:9px 14px; font-family:'Syne',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:.3px; cursor:pointer;
+  border:none; transition:all .2s;
+}
+.insights-btn-outline {
+  background:transparent; border:1px solid rgba(88,62,255,.2); color:#583EFF;
+}
+.insights-btn-outline:hover { background:rgba(88,62,255,.06); }
+.insights-btn-solid {
+  background:linear-gradient(135deg,#583EFF,#7B5FFF); color:#fff;
+}
+.insights-btn-solid:hover { opacity:.88; }
 
 /* ── City autocomplete ── */
 .city-ac-wrap { position:relative; flex:1; }
@@ -1095,88 +1110,32 @@ function buildAll() {
 
 
 
-// ── Roast Chat ──
-let roastHistory = [];
-let roastLang = 'es';
-let roastLangName = 'Spanish';
-let roastArtists = [];
-let roastBusy = false;
+// ── Music Insights ──
+let insightsArtists = [];
+let insightsLang = 'es';
 
-function roastScrollBottom() {
-  const msgs = document.getElementById('roastMessages');
-  if (msgs) msgs.scrollTop = msgs.scrollHeight;
-}
+function insightsComputeLocal(artistList) {
+  // Compute local stats from artist genres
+  const genreCounts = {};
+  artistList.forEach(a => (a.genres||[]).forEach(g => { genreCounts[g] = (genreCounts[g]||0)+1; }));
+  const genres = Object.keys(genreCounts);
+  const uniqueGenres = genres.length;
 
-function roastShowTyping() {
-  const msgs = document.getElementById('roastMessages');
-  if (!msgs) return;
-  const wrap = document.createElement('div');
-  wrap.className = 'roast-typing-wrap'; wrap.id = 'roastTyping';
-  wrap.innerHTML = '<div class="roast-avatar">🎵</div><div class="roast-typing"><span></span><span></span><span></span></div>';
-  msgs.appendChild(wrap);
-  roastScrollBottom();
-}
+  // Mainstream score: check for big mainstream artists
+  const mainstream = ['bad bunny','j balvin','maluma','taylor swift','drake','the weeknd','ed sheeran','harry styles','billie eilish','dua lipa'];
+  const alternative = ['radiohead','arctic monkeys','tame impala','bon iver','beach house','phoebe bridgers','sufjan stevens','mitski'];
+  const heavy = ['metallica','slipknot','system of a down','bring me the horizon','tool','darkest hour','august burns red'];
 
-function roastHideTyping() {
-  const t = document.getElementById('roastTyping');
-  if (t) t.remove();
-}
+  const names = artistList.map(a => a.name.toLowerCase());
+  const mainstreamCount = names.filter(n => mainstream.some(m => n.includes(m))).length;
+  const altCount = names.filter(n => alternative.some(m => n.includes(m))).length;
+  const heavyCount = names.filter(n => heavy.some(m => n.includes(m))).length;
 
-function roastAddBubble(text, isUser) {
-  const msgs = document.getElementById('roastMessages');
-  if (!msgs) return;
-  roastHideTyping();
-  const wrap = document.createElement('div');
-  wrap.className = 'roast-bubble-wrap' + (isUser ? ' user' : '');
-  if (!isUser) wrap.innerHTML = '<div class="roast-avatar">🎵</div>';
-  const bubble = document.createElement('div');
-  bubble.className = 'roast-bubble' + (isUser ? ' user' : '');
-  bubble.textContent = text;
-  wrap.appendChild(bubble);
-  msgs.appendChild(wrap);
-  roastScrollBottom();
-}
+  const chaosScore = Math.min(100, uniqueGenres * 8 + (mainstreamCount > 0 && heavyCount > 0 ? 30 : 0) + (altCount > 0 && mainstreamCount > 0 ? 20 : 0));
+  const rarityScore = Math.min(100, 100 - (mainstreamCount * 8) + (altCount * 6) + (heavyCount * 4));
+  const diversityCount = Math.min(uniqueGenres, 12);
 
-async function roastSendMessage(userText) {
-  if (roastBusy) return;
-  roastBusy = true;
-  const sendBtn = document.getElementById('roastSendBtn');
-  const input = document.getElementById('roastInput');
-  if (sendBtn) sendBtn.disabled = true;
-
-  if (userText) {
-    roastAddBubble(userText, true);
-    roastHistory.push({ role: 'user', content: userText });
-  }
-
-  roastShowTyping();
-  await new Promise(r => setTimeout(r, 900 + Math.random()*600));
-
-  try {
-    const res = await fetch('/api/roast', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: roastHistory,
-        artists: roastArtists,
-        lang: roastLang
-      })
-    });
-    const data = await res.json();
-    const reply = data.reply || '';
-    roastHideTyping();
-    roastAddBubble(reply, false);
-    roastHistory.push({ role: 'assistant', content: reply });
-  } catch(e) {
-    roastHideTyping();
-    const fallback = roastLang === 'es' ? 'Tu gusto musical me dejó sin palabras.' : 'Your music taste left me speechless.';
-    roastAddBubble(fallback, false);
-    roastHistory.push({ role: 'assistant', content: fallback });
-  }
-
-  roastBusy = false;
-  if (sendBtn) sendBtn.disabled = false;
-  if (input) { input.value = ''; input.focus(); }
+  return { chaosScore, rarityScore, diversityCount, mainstreamCount, heavyCount, altCount, uniqueGenres };
 }
 
 async function buildGenrePanel() {
@@ -1184,49 +1143,154 @@ async function buildGenrePanel() {
   const labelEl = document.getElementById('roastLabel');
 
   const lang = navigator.language || 'es';
-  roastLang = lang.startsWith('es') ? 'es' : lang.startsWith('pt') ? 'pt' : 'en';
-  roastLangName = roastLang === 'es' ? 'Spanish' : roastLang === 'pt' ? 'Portuguese' : 'English';
-  roastArtists = artists.slice(0, 12).map(a => a.name);
-  roastHistory = [];
+  insightsLang = lang.startsWith('es') ? 'es' : lang.startsWith('pt') ? 'pt' : 'en';
+  insightsArtists = artists.slice(0, 20);
+  const topNames = insightsArtists.slice(0, 12).map(a => a.name);
 
-  labelEl.textContent = roastLang === 'es' ? 'Tu roast musical 🔥' : roastLang === 'pt' ? 'Seu roast musical 🔥' : 'Your music roast 🔥';
-  const placeholder = roastLang === 'es' ? 'Responde algo...' : roastLang === 'pt' ? 'Responda algo...' : 'Reply something...';
+  const isEs = insightsLang === 'es';
+  const isPt = insightsLang === 'pt';
+  labelEl.textContent = isEs ? 'Music Insights ✦' : isPt ? 'Music Insights ✦' : 'Music Insights ✦';
+
+  // Show skeletons
+  el.innerHTML = `<div class="insights-loading">
+    <div class="insights-skel"></div>
+    <div class="insights-skel" style="opacity:.7"></div>
+    <div class="insights-skel" style="opacity:.5"></div>
+  </div>`;
+
+  const stats = insightsComputeLocal(insightsArtists);
+
+  // Chaos label
+  const chaosLabel = stats.chaosScore > 70
+    ? (isEs ? 'Extremo' : isPt ? 'Extremo' : 'Extreme')
+    : stats.chaosScore > 40
+    ? (isEs ? 'Alto' : isPt ? 'Alto' : 'High')
+    : (isEs ? 'Moderado' : isPt ? 'Moderado' : 'Moderate');
+  const chaosBadge = stats.chaosScore > 70 ? 'badge-high' : stats.chaosScore > 40 ? 'badge-mid' : 'badge-low';
+
+  // Rarity label
+  const rarityLabel = stats.rarityScore > 70
+    ? (isEs ? 'Raro raro' : 'Truly rare')
+    : stats.rarityScore > 45
+    ? (isEs ? 'Alternativo' : 'Alternative')
+    : (isEs ? 'Mainstream' : 'Mainstream');
+  const rarityBadge = stats.rarityScore > 70 ? 'badge-high' : stats.rarityScore > 45 ? 'badge-mid' : 'badge-low';
+
+  // Compat %
+  const compatPct = Math.max(0.1, (100 - stats.chaosScore * 0.6 - stats.rarityScore * 0.3) * 0.04).toFixed(1);
+
+  const insights = isEs ? [
+    {
+      icon: '🌀', label: 'Índice de caos',
+      value: chaosLabel,
+      sub: `${stats.uniqueGenres} géneros conviviendo sin supervisión`,
+      badge: { text: `${stats.chaosScore}%`, cls: chaosBadge }
+    },
+    {
+      icon: '💎', label: 'Rareza de gusto',
+      value: rarityLabel,
+      sub: stats.rarityScore > 60 ? 'Tu lineup no lo haría nadie más' : 'Reconocible pero con carácter propio',
+      badge: { text: rarityLabel, cls: rarityBadge }
+    },
+    {
+      icon: '🎪', label: 'Compatibilidad de festival',
+      value: `${compatPct}% de usuarios`,
+      sub: 'harían un lineup parecido al tuyo',
+      badge: null
+    },
+    {
+      icon: '⚡', label: 'Energía del lineup',
+      value: stats.heavyCount > 2 ? 'Mosh pit garantizado' : stats.mainstreamCount > 3 ? 'Singalong seguro' : 'Viaje emocional completo',
+      sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} artistas de fosa + ${stats.mainstreamCount} de escenario principal` : `${insightsArtists.length} artistas, ${stats.uniqueGenres} estados de ánimo`,
+      badge: null
+    }
+  ] : [
+    {
+      icon: '🌀', label: 'Chaos Index',
+      value: chaosLabel,
+      sub: `${stats.uniqueGenres} genres coexisting without supervision`,
+      badge: { text: `${stats.chaosScore}%`, cls: chaosBadge }
+    },
+    {
+      icon: '💎', label: 'Taste Rarity',
+      value: rarityLabel,
+      sub: stats.rarityScore > 60 ? 'Nobody else would make this lineup' : 'Recognizable but with character',
+      badge: { text: rarityLabel, cls: rarityBadge }
+    },
+    {
+      icon: '🎪', label: 'Festival Compatibility',
+      value: `${compatPct}% of users`,
+      sub: 'would build a similar lineup to yours',
+      badge: null
+    },
+    {
+      icon: '⚡', label: 'Lineup Energy',
+      value: stats.heavyCount > 2 ? 'Mosh pit guaranteed' : stats.mainstreamCount > 3 ? 'Singalong for sure' : 'Full emotional journey',
+      sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} pit artists + ${stats.mainstreamCount} main stage` : `${insightsArtists.length} artists, ${stats.uniqueGenres} moods`,
+      badge: null
+    }
+  ];
+
+  // Fetch roast from backend
+  let roastText = isEs ? 'Tu lineup no une generaciones, las confunde.' : 'Your lineup does not unite generations — it confuses them.';
+  try {
+    const langName = isEs ? 'Spanish' : isPt ? 'Portuguese' : 'English';
+    const res = await fetch('/api/roast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: isEs
+          ? 'Dame un diagnóstico sarcástico y divertido de mi gusto musical en 2 frases máximo. Menciona artistas específicos de mi lista.'
+          : 'Give me a sarcastic, funny diagnosis of my music taste in max 2 sentences. Mention specific artists from my list.' }],
+        artists: topNames,
+        lang: insightsLang
+      })
+    });
+    const data = await res.json();
+    if (data.reply) roastText = data.reply;
+  } catch(e) {}
+
+  const roastLabel2 = isEs ? 'Diagnóstico final' : isPt ? 'Diagnóstico final' : 'Final Diagnosis';
+  const shareLabel = isEs ? 'Compartir' : 'Share';
+  const regenLabel = isEs ? 'Otro roast' : 'Roast again';
 
   el.innerHTML = `
-    <div class="roast-card-inner">
-      <div class="roast-messages" id="roastMessages"></div>
-      <div class="roast-input-row">
-        <input class="roast-input" id="roastInput" placeholder="${placeholder}" autocomplete="off">
-        <button class="roast-send" id="roastSendBtn" disabled>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    <div class="insights-wrap">
+      ${insights.map((ins, i) => `
+        <div class="insight-item" style="animation-delay:${i*0.07}s">
+          <div class="insight-icon">${ins.icon}</div>
+          <div class="insight-body">
+            <div class="insight-label">${ins.label}</div>
+            <div class="insight-value">${ins.value}</div>
+            ${ins.sub ? '<div class="insight-sub">'+ins.sub+'</div>' : ''}
+          </div>
+          ${ins.badge ? '<span class="insight-badge '+ins.badge.cls+'">'+ins.badge.text+'</span>' : ''}
+        </div>`).join('')}
+
+      <div class="roast-final">
+        <div class="roast-final-label">${roastLabel2}</div>
+        <div class="roast-final-text">${roastText}</div>
+      </div>
+
+      <div class="insights-actions">
+        <button class="insights-btn insights-btn-outline" onclick="buildGenrePanel()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+          ${regenLabel}
+        </button>
+        <button class="insights-btn insights-btn-solid" onclick="shareInsights()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          ${shareLabel}
         </button>
       </div>
     </div>`;
+}
 
-  document.getElementById('roastInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !roastBusy) {
-      const val = e.target.value.trim();
-      if (val) roastSendMessage(val);
-    }
-  });
-  document.getElementById('roastInput').addEventListener('input', e => {
-    document.getElementById('roastSendBtn').disabled = !e.target.value.trim() || roastBusy;
-  });
-  document.getElementById('roastSendBtn').addEventListener('click', () => {
-    const val = document.getElementById('roastInput').value.trim();
-    if (val && !roastBusy) roastSendMessage(val);
-  });
-
-  // Initial roast — first message
-  const initPrompt = roastLang === 'es'
-    ? 'Hazme un roast sobre mi gusto musical. Sé específico con los artistas.'
-    : roastLang === 'pt' ? 'Me faça um roast sobre meu gosto musical. Seja específico com os artistas.'
-    : 'Roast my music taste. Be specific about the artists.';
-  roastHistory.push({ role: 'user', content: initPrompt });
-
-  roastShowTyping();
-  await new Promise(r => setTimeout(r, 1200));
-  await roastSendMessage(null);
+function shareInsights() {
+  if (navigator.share) {
+    navigator.share({ title: 'Mi perfil musical en LineApp', url: 'https://lineapp.club' });
+  } else {
+    navigator.clipboard?.writeText('lineapp.club');
+  }
 }
 
 async function fetchConcerts(city) {
