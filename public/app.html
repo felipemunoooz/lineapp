@@ -1081,7 +1081,8 @@ Write in ${langName}. No hashtags. No emojis. Just witty text. Don't start with 
     const roast = data.content?.[0]?.text || '';
     el.innerHTML = `<div class="roast-text">"${roast}"</div>`;
   } catch(e) {
-    el.innerHTML = `<div class="roast-text">${isEs ? 'Tu gusto musical es... único. Digámoslo así.' : 'Your music taste is... unique. Let's leave it at that.'}</div>`;
+    const fallback = isEs ? 'Tu gusto musical es... único. Digámoslo así.' : isPt ? 'Seu gosto musical é único. Vamos deixar assim.' : 'Your music taste is truly one of a kind.';
+    el.innerHTML = '<div class="roast-text">' + fallback + '</div>';
   }
 }
 
