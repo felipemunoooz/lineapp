@@ -400,12 +400,19 @@ body::before {
   .flyer-btns { width:100%; max-width:100%; }
   .right-panel { max-width:100%; width:calc(100% - 32px); overflow-y:visible; max-height:none; }
 
-  .topbar { padding:0 20px; }
+  /* Topbar */
+  .topbar { padding:0 16px; height:56px; }
+  .topbar-logo { flex:1; }
+  .topbar-right { gap:8px; }
+
+  /* Concerts card */
+  .card-fill { min-height:280px; }
+  .city-row { width:100%; }
 }
 @media (max-width:480px) {
-  .topbar-logo svg { height:18px; }
+  .topbar-logo svg { height:24px; }
   .chip-name { display:none; }
-  .btn-logout { padding:6px 12px; font-size:10px; }
+  .btn-logout { padding:6px 12px; font-size:11px; }
 }
 </style>
 </head>
