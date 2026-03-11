@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LineApp — Tu Festival Perfecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Mono:ital@0;1&family=Cormorant:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #583EFF;
+  --cream: #FFF9DA;
+  --dark:  #0a0718;
+  --pink:  #FF3E8A;
+  --mint:  #3EFFCB;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+.cursor-dot {
+  width:6px; height:6px; background:var(--cream);
+  border-radius:50%; position:fixed; top:0; left:0;
+  pointer-events:none; z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .05s;
+}
+.cursor-ring {
+  width:36px; height:36px;
+  border:1.5px solid rgba(255,249,218,.6);
+  border-radius:50%; position:fixed; top:0; left:0;
+  pointer-events:none; z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .3s, height .3s, border-color .3s;
+}
+.cursor-ring.big { width:60px; height:60px; border-color:rgba(255,249,218,.9); }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:20px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.nav-logo svg { height:34px; width:auto; }
+.nav-right { display:flex; align-items:center; gap:32px; }
+.nav-link {
+  font-family:'DM Mono',monospace; font-size:11px;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,249,218,.45); text-decoration:none; transition:color .2s;
+}
+.nav-link:hover, .nav-link.cta { color:var(--cream); }
+.hero {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative; padding:120px 40px 80px;
+  text-align:center; overflow:hidden;
+}
+.blob {
+  position:absolute; border-radius:50%;
+  filter:blur(90px); pointer-events:none;
+  animation:drift 8s ease-in-out infinite alternate;
+}
+.blob1 { width:500px; height:500px; background:#7B5FFF; opacity:.4; top:-120px; right:-80px; }
+.blob2 { width:380px; height:380px; background:#FF3E8A; opacity:.3; bottom:-80px; left:-60px; animation-delay:-3s; }
+.blob3 { width:280px; height:280px; background:#3EFFCB; opacity:.2; top:45%; left:62%; animation-delay:-5s; }
+@keyframes drift { to { transform:translate(25px,18px) scale(1.06); } }
+.ring {
+  position:absolute; width:600px; height:600px;
+  border:1px solid rgba(255,249,218,.05); border-radius:50%;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  animation:spin 30s linear infinite;
+}
+.ring2 { width:900px; height:900px; border-color:rgba(255,249,218,.025); animation-duration:50s; animation-direction:reverse; }
+@keyframes spin { to { transform:translate(-50%,-50%) rotate(360deg); } }
+.eyebrow {
+  font-family:'DM Mono',monospace; font-size:11px;
+  letter-spacing:4px; text-transform:uppercase;
+  color:rgba(255,249,218,.45); margin-bottom:24px;
+  opacity:0; animation:fadeUp .8s .2s forwards;
+}
+.hero-logo { margin-bottom:20px; opacity:0; animation:fadeUp .8s .35s forwards; }
+.hero-logo svg { height:68px; width:auto; }
+.hero-sub {
+  font-size:clamp(17px,2.8vw,24px); font-weight:300;
+  color:rgba(255,249,218,.6); max-width:500px; line-height:1.55;
+  margin-bottom:52px; opacity:0; animation:fadeUp .8s .5s forwards;
+}
+.hero-sub strong { color:var(--cream); font-weight:700; }
+.btn-main {
+  display:inline-flex; align-items:center; gap:14px;
+  background:var(--cream); color:var(--dark);
+  text-decoration:none; border-radius:6px; padding:16px 36px;
+  font-family:'Syne',sans-serif; font-weight:700; font-size:14px;
+  letter-spacing:0.5px; text-transform:none; font-style:normal;
+  transition:transform .25s, box-shadow .25s;
+  opacity:0; animation:fadeUp .8s .65s forwards;
+  border: 2px solid var(--cream);
+  border-radius:100px;
+  padding:16px 28px;
+  position:relative; overflow:hidden;
+}
+.btn-main::after {
+  content:'';
+  position:absolute; top:-50%; left:-75%; width:50%; height:200%;
+  background:linear-gradient(120deg, transparent, rgba(255,255,255,.55), transparent);
+  transform:skewX(-20deg);
+  transition:left .5s ease;
+}
+.btn-main:hover { transform:scale(1.045); box-shadow:0 0 28px rgba(255,249,218,.35), 0 0 60px rgba(255,249,218,.15); }
+.btn-main:hover::after { left:140%; }
+.hero-note {
+  margin-top:18px; font-family:'DM Mono',monospace;
+  font-size:10px; letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,249,218,.28); opacity:0; animation:fadeUp .8s .8s forwards;
+}
+.marquee-wrap {
+  overflow:hidden; padding:18px 0;
+  border-top:1px solid rgba(255,249,218,.07);
+  border-bottom:1px solid rgba(255,249,218,.07);
+}
+.marquee-track {
+  display:flex; gap:50px; width:max-content;
+  animation:marquee 22s linear infinite;
+}
+.marquee-track span {
+  font-family:'Bebas Neue',sans-serif; font-size:20px;
+  letter-spacing:4px; color:rgba(255,249,218,.16); white-space:nowrap;
+}
+.marquee-track span.hi { color:rgba(255,249,218,.5); }
+@keyframes marquee { to { transform:translateX(-50%); } }
+.section { padding:110px 40px; max-width:1080px; margin:0 auto; }
+.s-label {
+  font-family:'DM Mono',monospace; font-size:10px;
+  letter-spacing:4px; text-transform:uppercase;
+  color:var(--mint); margin-bottom:18px;
+}
+.s-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(48px,8vw,92px); line-height:.95;
+  margin-bottom:72px;
+}
+.steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:2px; }
+.step {
+  background:rgba(255,249,218,.04);
+  border:1px solid rgba(255,249,218,.07);
+  padding:36px 28px; position:relative; overflow:hidden;
+  transition:background .3s; opacity:0;
+}
+.step:hover { background:rgba(255,249,218,.07); }
+.step::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--pink),var(--mint));
+  transform:scaleX(0); transform-origin:left; transition:transform .4s;
+}
+.step:hover::before { transform:scaleX(1); }
+.step-num {
+  font-family:'Bebas Neue',sans-serif; font-size:60px; line-height:1;
+  color:rgba(255,249,218,.06); margin-bottom:14px;
+}
+.step-title { font-weight:800; font-size:17px; margin-bottom:8px; }
+.step-desc { font-size:13px; line-height:1.75; color:rgba(255,249,218,.48); }
+.preview-wrap {
+  background:rgba(0,0,0,.18); padding:80px 40px 110px;
+  text-align:center;
+}
+.p-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(38px,6vw,68px); margin-bottom:14px;
+}
+.p-sub { color:rgba(255,249,218,.45); font-size:15px; margin-bottom:56px; }
+.flyers-row {
+  display:flex; gap:18px; justify-content:center;
+  align-items:flex-end; flex-wrap:wrap;
+}
+.fc {
+  width:155px; height:276px; border-radius:10px;
+  position:relative; overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  transition:transform .3s;
+}
+.fc:hover { transform:translateY(-10px) rotate(0deg) !important; }
+.fc:nth-child(1) { transform:rotate(-4deg); }
+.fc:nth-child(2) { transform:rotate(1.5deg) translateY(-18px); width:178px; height:316px; }
+.fc:nth-child(3) { transform:rotate(3.5deg); }
+.fc-bg { position:absolute; inset:0; }
+.fc1 .fc-bg { background:linear-gradient(160deg,#cc2200,#3366ff); }
+.fc2 .fc-bg { background:linear-gradient(160deg,#583EFF,#FF3E8A); }
+.fc3 .fc-bg { background:linear-gradient(160deg,#1a0a2e,#c45e1a); }
+.fc-overlay {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:14px;
+}
+.fc-name {
+  font-family:'Bebas Neue',sans-serif; font-size:17px; letter-spacing:2px;
+  color:#fff; text-align:center; text-shadow:0 2px 8px rgba(0,0,0,.5); margin-bottom:8px;
+}
+.fc-artists {
+  font-family:'DM Mono',monospace; font-size:6.5px;
+  letter-spacing:1px; color:rgba(255,255,255,.65);
+  text-align:center; line-height:2;
+}
+footer {
+  padding:36px 40px;
+  border-top:1px solid rgba(255,249,218,.07);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:14px;
+}
+.footer-logo svg { height:18px; }
+.footer-copy {
+  font-family:'DM Mono',monospace; font-size:10px;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,249,218,.22);
+}
+.footer-links { display:flex; gap:20px; }
+.footer-link {
+  font-family:'DM Mono',monospace; font-size:10px;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,249,218,.28); text-decoration:none; transition:color .2s;
+}
+.footer-link:hover { color:var(--cream); }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(22px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+/* ── Tablet ── */
+@media (max-width:768px) {
+  nav { padding:16px 24px; }
+  .nav-right { gap:20px; }
+  .hero { padding:100px 32px 64px; }
+  .hero-logo svg { height:52px; }
+  .steps { grid-template-columns:1fr; gap:2px; }
+  .section { padding:80px 24px; }
+  .preview-wrap { padding:64px 24px 80px; }
+  .flyers-row { gap:14px; }
+  footer { padding:32px 24px; }
+}
+
+/* ── Mobile ── */
+@media (max-width:480px) {
+  nav { padding:14px 18px; }
+  .nav-logo svg { height:20px; }
+  .nav-right { gap:14px; }
+  .nav-link:first-child { display:none; } /* hide "cómo funciona" on small screens */
+  .hero { padding:88px 20px 52px; }
+  .hero-logo svg { height:42px; }
+  .eyebrow { font-size:10px; letter-spacing:3px; }
+  .hero-sub { font-size:16px; }
+  .btn-main { padding:14px 28px; font-size:12px; width:100%; justify-content:center; }
+  .hero-note { font-size:9px; }
+  .blob1, .blob2, .blob3 { width:250px; height:250px; }
+  .ring, .ring2 { display:none; }
+  .s-title { font-size:48px; }
+  .step { padding:28px 22px; }
+  .step-num { font-size:48px; }
+  .fc:nth-child(1), .fc:nth-child(3) { display:none; }
+  .fc:nth-child(2) { width:160px; height:284px; transform:none; }
+  footer { padding:24px 18px; flex-direction:column; align-items:flex-start; gap:12px; }
+  .footer-links { gap:16px; }
+  /* hide custom cursor on touch devices */
+  .cursor-dot, .cursor-ring { display:none; }
+}
+
+/* ── Touch devices — restore default cursor ── */
+@media (hover:none) {
+  body { cursor:auto; }
+  .cursor-dot, .cursor-ring { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 282 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M265.978 15.1404H255.619V55.621H261.834C264.065 55.621 265.978 53.7086 265.978 51.4773V15.1404ZM239.681 111.561V0H269.165C276.178 0 281.915 5.73741 281.915 12.7498V50.5211C281.915 57.5335 276.178 63.2709 269.165 63.2709H255.619V111.561H239.681Z" fill="#FFF9DA"/>
+      <path d="M220.532 15.1404H210.172V55.621H216.388C218.619 55.621 220.532 53.7086 220.532 51.4773V15.1404ZM194.235 111.561V0H223.719C230.732 0 236.469 5.73741 236.469 12.7498V50.5211C236.469 57.5335 230.732 63.2709 223.719 63.2709H210.172V111.561H194.235Z" fill="#FFF9DA"/>
+      <path d="M183.373 0L191.023 111.561H175.086L174.608 96.4204H165.205L164.726 111.561H148.789L156.439 0H183.373ZM165.842 81.1206H174.129L171.739 15.1404H168.073L165.842 81.1206Z" fill="#FFF9DA"/>
+      <path d="M145.602 0V15.1404H124.883V47.8118H139.067V62.9522H124.883V96.4204H145.602V111.561H108.946V0H145.602Z" fill="#FFF9DA"/>
+      <path d="M105.683 0V111.561H86.2393L75.8801 28.3683H74.9238V111.561H58.9866V0H78.43L88.9486 80.4831H89.7455V0H105.683Z" fill="#FFF9DA"/>
+      <path d="M39.8431 0H55.7804V111.561H39.8431V0Z" fill="#FFF9DA"/>
+      <path d="M15.9373 0V96.4204H36.6557V111.561H0V0H15.9373Z" fill="#FFF9DA"/>
+    </svg>
+  </div>
+  <div class="nav-right">
+    <a href="#como" class="nav-link">Cómo funciona</a>
+    <a href="/login" class="nav-link cta">Entrar →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="ring"></div>
+  <div class="ring ring2"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <p class="eyebrow">✦ Tu música. Tu festival.</p>
+
+  <div class="hero-logo">
+    <svg viewBox="0 0 282 112" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:68px;width:auto">
+      <path d="M265.978 15.1404H255.619V55.621H261.834C264.065 55.621 265.978 53.7086 265.978 51.4773V15.1404ZM239.681 111.561V0H269.165C276.178 0 281.915 5.73741 281.915 12.7498V50.5211C281.915 57.5335 276.178 63.2709 269.165 63.2709H255.619V111.561H239.681Z" fill="#FFF9DA"/>
+      <path d="M220.532 15.1404H210.172V55.621H216.388C218.619 55.621 220.532 53.7086 220.532 51.4773V15.1404ZM194.235 111.561V0H223.719C230.732 0 236.469 5.73741 236.469 12.7498V50.5211C236.469 57.5335 230.732 63.2709 223.719 63.2709H210.172V111.561H194.235Z" fill="#FFF9DA"/>
+      <path d="M183.373 0L191.023 111.561H175.086L174.608 96.4204H165.205L164.726 111.561H148.789L156.439 0H183.373ZM165.842 81.1206H174.129L171.739 15.1404H168.073L165.842 81.1206Z" fill="#FFF9DA"/>
+      <path d="M145.602 0V15.1404H124.883V47.8118H139.067V62.9522H124.883V96.4204H145.602V111.561H108.946V0H145.602Z" fill="#FFF9DA"/>
+      <path d="M105.683 0V111.561H86.2393L75.8801 28.3683H74.9238V111.561H58.9866V0H78.43L88.9486 80.4831H89.7455V0H105.683Z" fill="#FFF9DA"/>
+      <path d="M39.8431 0H55.7804V111.561H39.8431V0Z" fill="#FFF9DA"/>
+      <path d="M15.9373 0V96.4204H36.6557V111.561H0V0H15.9373Z" fill="#FFF9DA"/>
+    </svg>
+  </div>
+
+  <p class="hero-sub">
+    Conecta tu Spotify y genera el flyer de tu festival ideal basado en los artistas que más escuchas.
+  </p>
+
+  <a href="/login" class="btn-main">
+    <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M17.25 16.5c-.2 0-.35-.05-.5-.15-1.55-1-3.45-1.5-5.7-1.5-1.2 0-2.35.15-3.45.4-.2.05-.45.1-.6.1-.5 0-.9-.4-.9-.9s.3-.85.75-.95c1.3-.3 2.65-.5 4.2-.5 2.6 0 4.85.6 6.7 1.75.35.2.55.5.55.9 0 .5-.4.85-.85.85zm1.2-2.9c-.25 0-.45-.05-.65-.2-1.85-1.1-4.35-1.75-7.15-1.75-1.45 0-2.7.2-3.7.45-.25.05-.4.1-.65.1-.6 0-1.05-.45-1.05-1.05s.35-1 .85-1.15c1.25-.35 2.7-.55 4.55-.55 3.1 0 5.95.75 8.15 2.1.4.25.65.6.65 1.1 0 .6-.5 1.05-1 1.05zm1.3-3.25c-.2 0-.4-.05-.6-.15-2.1-1.25-5.1-1.95-8.1-1.95-1.6 0-3.05.2-4.2.5-.2.05-.4.1-.65.1-.7 0-1.25-.55-1.25-1.25s.45-1.2 1.05-1.35c1.35-.35 2.95-.55 5.05-.55 3.35 0 6.7.75 9.2 2.2.45.25.7.65.7 1.2 0 .7-.55 1.25-1.2 1.25z" fill="white"/></svg>
+    <span>Conectar con Spotify</span>
+  </a>
+  <p class="hero-note">Gratis · Sin registro · Solo necesitas Spotify</p>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="hi">LINEAPP</span><span>✦</span><span>TU FESTIVAL PERFECTO</span><span>✦</span>
+    <span class="hi">GENERA TU FLYER</span><span>✦</span><span>COMPARTE EN INSTAGRAM</span><span>✦</span>
+    <span class="hi">LINEAPP</span><span>✦</span><span>TU FESTIVAL PERFECTO</span><span>✦</span>
+    <span class="hi">GENERA TU FLYER</span><span>✦</span><span>COMPARTE EN INSTAGRAM</span><span>✦</span>
+    <span class="hi">LINEAPP</span><span>✦</span><span>TU FESTIVAL PERFECTO</span><span>✦</span>
+    <span class="hi">GENERA TU FLYER</span><span>✦</span><span>COMPARTE EN INSTAGRAM</span><span>✦</span>
+  </div>
+</div>
+
+<section class="section" id="como">
+  <p class="s-label">✦ Cómo funciona</p>
+  <h2 class="s-title">Tres pasos.<br>Un festival.</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Conecta Spotify</div>
+      <div class="step-desc">Iniciamos sesión de forma segura. No guardamos contraseñas ni datos personales.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Analizamos tu música</div>
+      <div class="step-desc">Leemos tus artistas más escuchados del último mes, 6 meses o de toda tu historia.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Genera y comparte</div>
+      <div class="step-desc">Descarga tu flyer personalizado y compártelo en Instagram Stories.</div>
+    </div>
+  </div>
+</section>
+
+<div class="preview-wrap">
+  <h2 class="p-title">Diseñado para compartir</h2>
+  <p class="p-sub">Cada flyer es único según tu gusto musical</p>
+  <div class="flyers-row">
+    <div class="fc fc1"><div class="fc-bg"></div><div class="fc-overlay"><div class="fc-name">LINEAPP<br>FESTIVAL</div><div class="fc-artists">METALLICA<br>SLIPKNOT · TOOL<br>SYSTEM OF A DOWN<br>BRING ME THE HORIZON</div></div></div>
+    <div class="fc fc2"><div class="fc-bg"></div><div class="fc-overlay"><div class="fc-name">LINEAPP<br>FESTIVAL</div><div class="fc-artists">BAD BUNNY<br>ROSALÍA · J BALVIN<br>MALUMA · KAROL G<br>RAUW ALEJANDRO</div></div></div>
+    <div class="fc fc3"><div class="fc-bg"></div><div class="fc-overlay"><div class="fc-name">LINEAPP<br>FESTIVAL</div><div class="fc-artists">TAME IMPALA<br>ARCTIC MONKEYS · MGMT<br>VAMPIRE WEEKEND<br>THE STROKES</div></div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">
+    <svg viewBox="0 0 282 112" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:18px;width:auto;opacity:.35">
+      <path d="M265.978 15.1404H255.619V55.621H261.834C264.065 55.621 265.978 53.7086 265.978 51.4773V15.1404ZM239.681 111.561V0H269.165C276.178 0 281.915 5.73741 281.915 12.7498V50.5211C281.915 57.5335 276.178 63.2709 269.165 63.2709H255.619V111.561H239.681Z" fill="#FFF9DA"/>
+      <path d="M220.532 15.1404H210.172V55.621H216.388C218.619 55.621 220.532 53.7086 220.532 51.4773V15.1404ZM194.235 111.561V0H223.719C230.732 0 236.469 5.73741 236.469 12.7498V50.5211C236.469 57.5335 230.732 63.2709 223.719 63.2709H210.172V111.561H194.235Z" fill="#FFF9DA"/>
+      <path d="M183.373 0L191.023 111.561H175.086L174.608 96.4204H165.205L164.726 111.561H148.789L156.439 0H183.373ZM165.842 81.1206H174.129L171.739 15.1404H168.073L165.842 81.1206Z" fill="#FFF9DA"/>
+      <path d="M145.602 0V15.1404H124.883V47.8118H139.067V62.9522H124.883V96.4204H145.602V111.561H108.946V0H145.602Z" fill="#FFF9DA"/>
+      <path d="M105.683 0V111.561H86.2393L75.8801 28.3683H74.9238V111.561H58.9866V0H78.43L88.9486 80.4831H89.7455V0H105.683Z" fill="#FFF9DA"/>
+      <path d="M39.8431 0H55.7804V111.561H39.8431V0Z" fill="#FFF9DA"/>
+      <path d="M15.9373 0V96.4204H36.6557V111.561H0V0H15.9373Z" fill="#FFF9DA"/>
+    </svg>
+  </div>
+  <span class="footer-copy">© 2025 LineApp · lineapp.club</span>
+  <div class="footer-links">
+    <a href="#" class="footer-link">Privacidad</a>
+    <a href="#" class="footer-link">Términos</a>
+  </div>
+</footer>
+
+<script>
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('big'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('big'));
+});
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.style.animation = 'fadeUp .6s forwards';
+        entry.target.style.opacity = '1';
+      }, i * 100);
+      obs.unobserve(entry.target);
+    }
+  });
+}, { threshold: .15 });
+document.querySelectorAll('.step').forEach(el => obs.observe(el));
+</script>
+
+<script>
+// i18n
+const TEXTS = {
+  es: {
+    eyebrow: '✦ Tu música. Tu festival.',
+    sub: 'Conecta tu Spotify y genera el flyer de tu festival ideal basado en los artistas que más escuchas.',
+    btn: 'Conectar con Spotify',
+    note: 'Gratis · Sin registro · Solo necesitas Spotify',
+    navHow: 'Cómo funciona',
+    navEnter: 'Entrar →',
+    howLabel: '✦ Cómo funciona',
+    howTitle: 'Tres pasos.<br>Un festival.',
+    s1t: 'Conecta Spotify', s1d: 'Iniciamos sesión de forma segura. No guardamos contraseñas ni datos personales.',
+    s2t: 'Analizamos tu música', s2d: 'Leemos tus artistas más escuchados del último mes, 6 meses o de toda tu historia.',
+    s3t: 'Genera y comparte', s3d: 'Descarga tu flyer personalizado y compártelo en Instagram Stories.',
+    prevTitle: 'Diseñado para compartir',
+    prevSub: 'Cada flyer es único según tu gusto musical',
+    copy: '© 2025 LineApp · lineapp.club',
+    privacy: 'Privacidad', terms: 'Términos',
+  },
+  en: {
+    eyebrow: '✦ Your music. Your festival.',
+    sub: 'Connect your Spotify and generate the perfect festival lineup based on your most listened artists.',
+    btn: 'Connect with Spotify',
+    note: 'Free · No sign-up · Just Spotify',
+    navHow: 'How it works',
+    navEnter: 'Enter →',
+    howLabel: '✦ How it works',
+    howTitle: 'Three steps.<br>One festival.',
+    s1t: 'Connect Spotify', s1d: 'We log in securely. We never store passwords or personal data.',
+    s2t: 'We analyze your music', s2d: 'We read your most listened artists from the last month, 6 months or all time.',
+    s3t: 'Generate and share', s3d: 'Download your personalized flyer and share it on Instagram Stories.',
+    prevTitle: 'Designed to share',
+    prevSub: 'Every flyer is unique to your taste',
+    copy: '© 2025 LineApp · lineapp.club',
+    privacy: 'Privacy', terms: 'Terms',
+  },
+  pt: {
+    eyebrow: '✦ Sua música. Seu festival.',
+    sub: 'Conecte seu Spotify e gere o flyer do seu festival ideal baseado nos artistas que você mais ouve.',
+    btn: 'Conectar com Spotify',
+    note: 'Grátis · Sem cadastro · Só precisa do Spotify',
+    navHow: 'Como funciona',
+    navEnter: 'Entrar →',
+    howLabel: '✦ Como funciona',
+    howTitle: 'Três passos.<br>Um festival.',
+    s1t: 'Conecta Spotify', s1d: 'Fazemos login com segurança. Não guardamos senhas nem dados pessoais.',
+    s2t: 'Analisamos sua música', s2d: 'Lemos seus artistas mais ouvidos do último mês, 6 meses ou todo o tempo.',
+    s3t: 'Gere e compartilhe', s3d: 'Baixe seu flyer personalizado e compartilhe nos Stories do Instagram.',
+    prevTitle: 'Feito para compartilhar',
+    prevSub: 'Cada flyer é único de acordo com seu gosto musical',
+    copy: '© 2025 LineApp · lineapp.club',
+    privacy: 'Privacidade', terms: 'Termos',
+  }
+};
+
+function applyLang() {
+  const lang = (navigator.language || 'es').toLowerCase().slice(0,2);
+  const t = TEXTS[lang] || TEXTS['en'];
+
+  document.querySelector('.eyebrow').textContent = t.eyebrow;
+  document.querySelector('.hero-sub').textContent = t.sub;
+  document.querySelector('.btn-main span').textContent = t.btn;
+  document.querySelector('.hero-note').textContent = t.note;
+  document.querySelectorAll('.nav-link')[0].textContent = t.navHow;
+  document.querySelectorAll('.nav-link')[1].textContent = t.navEnter;
+  document.querySelector('.s-label').textContent = t.howLabel;
+  document.querySelector('.s-title').innerHTML = t.howTitle;
+  const steps = document.querySelectorAll('.step');
+  steps[0].querySelector('.step-title').textContent = t.s1t;
+  steps[0].querySelector('.step-desc').textContent = t.s1d;
+  steps[1].querySelector('.step-title').textContent = t.s2t;
+  steps[1].querySelector('.step-desc').textContent = t.s2d;
+  steps[2].querySelector('.step-title').textContent = t.s3t;
+  steps[2].querySelector('.step-desc').textContent = t.s3d;
+  document.querySelector('.p-title').textContent = t.prevTitle;
+  document.querySelector('.p-sub').textContent = t.prevSub;
+  document.querySelector('.footer-copy').textContent = t.copy;
+  document.querySelectorAll('.footer-link')[0].textContent = t.privacy;
+  document.querySelectorAll('.footer-link')[1].textContent = t.terms;
+}
+applyLang();
+</script>
+</body>
+</html>

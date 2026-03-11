@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LineApp — Tu Festival</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Syne:wght@300;400;700;800&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { min-height:100vh; background:#0e0e0e; color:#fff; font-family:'Syne',sans-serif; }
+
+#loading {
+  position:fixed; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:#583EFF; z-index:100; gap:0;
+  overflow:hidden;
+}
+
+/* Blobs */
+#loading::before, #loading::after {
+  content:''; position:absolute; border-radius:50%;
+  filter:blur(80px); pointer-events:none;
+}
+#loading::before {
+  width:400px; height:400px; background:#8B6FFF;
+  opacity:.4; top:-100px; right:-80px;
+  animation:ldrift 7s ease-in-out infinite alternate;
+}
+#loading::after {
+  width:350px; height:350px; background:#FF3E8A;
+  opacity:.25; bottom:-80px; left:-60px;
+  animation:ldrift 9s ease-in-out infinite alternate-reverse;
+}
+@keyframes ldrift { to { transform:translate(20px,15px) scale(1.07); } }
+
+/* Logo */
+.l-logo {
+  opacity:0; transform:translateY(16px);
+  animation:lFadeUp .7s .1s forwards;
+  margin-bottom:48px; z-index:1;
+}
+.l-logo svg { height:44px; width:auto; }
+
+/* Vinyl record */
+.l-vinyl {
+  width:72px; height:72px; position:relative;
+  margin-bottom:32px; z-index:1;
+  animation:lFadeUp .7s .25s forwards; opacity:0;
+}
+.l-vinyl-outer {
+  width:72px; height:72px; border-radius:50%;
+  background:conic-gradient(
+    #FFF9DA08 0deg, #FFF9DA18 30deg, #FFF9DA08 60deg,
+    #FFF9DA18 90deg, #FFF9DA08 120deg, #FFF9DA18 150deg,
+    #FFF9DA08 180deg, #FFF9DA18 210deg, #FFF9DA08 240deg,
+    #FFF9DA18 270deg, #FFF9DA08 300deg, #FFF9DA18 330deg, #FFF9DA08 360deg
+  );
+  border: 1.5px solid rgba(255,249,218,.15);
+  animation:spin 2.5s linear infinite;
+  position:absolute; inset:0;
+}
+.l-vinyl-mid {
+  position:absolute; width:28px; height:28px;
+  border-radius:50%; background:#583EFF;
+  border:1.5px solid rgba(255,249,218,.2);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.l-vinyl-dot {
+  position:absolute; width:6px; height:6px;
+  border-radius:50%; background:rgba(255,249,218,.5);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Status text */
+.l-status {
+  font-family:'Syne',sans-serif; font-weight:300;
+  font-size:14px; color:rgba(255,249,218,.55);
+  letter-spacing:.5px; z-index:1;
+  opacity:0; animation:lFadeUp .7s .4s forwards;
+  min-height:22px; text-align:center;
+  transition:opacity .3s;
+}
+
+/* Dots */
+.l-dots { display:inline-flex; gap:4px; margin-left:2px; vertical-align:middle; }
+.l-dots span {
+  width:4px; height:4px; border-radius:50%;
+  background:rgba(255,249,218,.4);
+  animation:ldot .9s ease-in-out infinite;
+  display:inline-block;
+}
+.l-dots span:nth-child(2) { animation-delay:.15s; }
+.l-dots span:nth-child(3) { animation-delay:.3s; }
+@keyframes ldot {
+  0%,80%,100% { transform:scale(.7); opacity:.3; }
+  40%          { transform:scale(1.1); opacity:1; }
+}
+
+.l-ad {
+  margin-top:36px; z-index:1;
+  opacity:0; animation:lFadeUp .7s .8s forwards;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.l-ad-label {
+  font-family:'Syne',sans-serif; font-size:9px;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(255,249,218,.2);
+}
+
+@keyframes lFadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── Design tokens ── */
+:root {
+  --cream: #FFF9DA;
+  --purple: #583EFF;
+  --glass-bg: rgba(255,249,218,.10);
+  --glass-border: rgba(255,249,218,.18);
+}
+
+/* ── Layout ── */
+html { height:100%; }
+body { min-height:100%; background:var(--purple); color:var(--cream); font-family:'Syne',sans-serif; overflow-y:auto; }
+
+/* ── Background — exact same as landing ── */
+.blob {
+  position:fixed; border-radius:50%;
+  filter:blur(90px); pointer-events:none; z-index:0;
+  animation:drift 8s ease-in-out infinite alternate;
+}
+.blob1 { width:500px; height:500px; background:#7B5FFF; opacity:.4; top:-120px; right:-80px; }
+.blob2 { width:380px; height:380px; background:#FF3E8A; opacity:.3; bottom:-80px; left:-60px; animation-delay:-3s; }
+.blob3 { width:280px; height:280px; background:#3EFFCB; opacity:.2; top:45%; left:62%; animation-delay:-5s; }
+@keyframes drift { to { transform:translate(25px,18px) scale(1.06); } }
+.ring {
+  position:fixed; width:600px; height:600px;
+  border:1px solid rgba(255,249,218,.05); border-radius:50%;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  animation:rspin 30s linear infinite; pointer-events:none; z-index:0;
+}
+.ring2 { width:900px; height:900px; border-color:rgba(255,249,218,.025); animation-duration:50s; animation-direction:reverse; }
+@keyframes rspin { to { transform:translate(-50%,-50%) rotate(360deg); } }
+
+/* Noise texture */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity:.3;
+}
+
+#app {
+  display:none;
+  flex-direction:column;
+  min-height:100vh;
+  position:relative; z-index:1;
+}
+
+/* ── Topbar — fixed height ── */
+.topbar {
+  flex-shrink:0;
+  padding:0 32px; height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(255,249,218,.08);
+  background:rgba(88,62,255,.85); backdrop-filter:blur(16px);
+  z-index:50;
+}
+.topbar-logo svg { height:30px; width:auto; }
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.chip {
+  display:flex; align-items:center; gap:8px;
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  border-radius:100px; padding:4px 14px 4px 4px;
+}
+.chip img { width:26px; height:26px; border-radius:50%; object-fit:cover; }
+.chip-name { font-size:12px; font-weight:700; color:var(--cream); }
+.btn-logout {
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  border-radius:100px; padding:7px 16px; color:rgba(255,249,218,.6);
+  font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:all .2s;
+}
+.btn-logout:hover { color:var(--cream); border-color:rgba(255,249,218,.5); }
+
+.layout {
+  flex:1;
+  display:flex; gap:28px; padding:24px 32px 130px;
+  justify-content:center; align-items:center;
+  position:relative; z-index:1;
+}
+
+/* ── Left column: flyer + buttons ── */
+.flyer-wrap {
+  flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+
+/* Canvas fills available height, width is auto (preserves aspect ratio) */
+#flyerCanvas {
+  display:block !important;
+  width:348px !important;
+  height:620px !important;
+  border-radius:12px !important;
+  box-shadow:0 24px 80px rgba(0,0,0,.5);
+}
+
+/* Buttons: fixed 48px, same width as canvas */
+.flyer-btns {
+  width:348px;
+  display:flex; gap:10px;
+}
+.flyer-btn {
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  height:48px; border-radius:100px;
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  letter-spacing:.3px; cursor:pointer; transition:all .2s;
+  white-space:nowrap; position:relative; overflow:hidden;
+}
+.flyer-btn-outline {
+  background:transparent; border:2px solid #fff; color:#fff;
+}
+.flyer-btn-outline:hover { background:rgba(255,249,218,.1); transform:translateY(-1px); }
+.flyer-btn-solid {
+  background:#fff; border:2px solid #fff; color:var(--purple);
+}
+.flyer-btn-solid::after {
+  content:''; position:absolute; top:-50%; left:-75%; width:50%; height:200%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-20deg); transition:left .5s ease;
+}
+.flyer-btn-solid:hover { transform:translateY(-1px); }
+.flyer-btn-solid:hover::after { left:140%; }
+
+/* ── Right column ── */
+.right-panel {
+  flex:1; min-width:280px; max-width:460px;
+  display:flex; flex-direction:column; gap:16px;
+  height:682px;
+}
+
+
+/* ── Tabs ── */
+.time-pills {
+  flex-shrink:0;
+  display:flex; gap:4px; background:#fff;
+  border-radius:100px; padding:4px;
+  height:48px;
+}
+.tpill {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  border-radius:100px; border:none; background:none;
+  color:rgba(88,62,255,.45); font-family:'Syne',sans-serif;
+  font-size:13px; font-weight:700; letter-spacing:.3px;
+  cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.tpill.active { background:var(--purple); color:var(--cream); }
+
+/* ── Cards ── */
+.card {
+  background:#fff; border:none;
+  border-radius:14px; padding:22px;
+}
+.card-fill {
+  flex:1; display:flex; flex-direction:column; min-height:0;
+}
+.card-fill .city-row,
+.card-fill #concertDiv { flex-shrink:0; }
+.card-fill #concertDiv { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+
+.card-label {
+  font-family:'DM Mono',monospace; font-size:9px; font-weight:400;
+  letter-spacing:3px; text-transform:uppercase;
+  color:rgba(88,62,255,.5); margin-bottom:18px;
+}
+
+/* ── Genre bars ── */
+.g-row { margin-bottom:14px; }
+.g-row:last-child { margin-bottom:0; }
+.g-top {
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:13px; font-weight:600; margin-bottom:8px; color:#1a1a2e;
+}
+.g-top span:last-child {
+  font-family:'DM Mono',monospace; font-size:10px;
+  font-weight:400; color:rgba(88,62,255,.5);
+}
+.g-bg { height:8px; background:rgba(88,62,255,.12); border-radius:100px; overflow:hidden; }
+.g-fill {
+  height:100%; border-radius:100px;
+  background:#FF3E8A;
+  transition:width 1.4s cubic-bezier(.16,1,.3,1);
+}
+
+/* ── Concerts ── */
+.city-row { width:100%; display:flex; gap:8px; align-items:center; margin-bottom:14px; }
+.city-in {
+  background:rgba(88,62,255,.06); border:1px solid rgba(88,62,255,.15);
+  border-radius:100px; padding:0 20px; color:#1a1a2e;
+  font-family:'Syne',sans-serif; font-size:13px; outline:none;
+  width:100%; height:42px; transition:border-color .2s;
+}
+.city-in:focus { border-color:rgba(88,62,255,.4); }
+.city-in::placeholder { color:rgba(88,62,255,.35); }
+.c-row {
+  display:flex; gap:12px; align-items:flex-start;
+  padding:12px 0; border-bottom:1px solid rgba(88,62,255,.08);
+}
+.c-row:last-child { border:none; padding-bottom:0; }
+.c-cal {
+  flex-shrink:0; width:44px; text-align:center;
+  background:rgba(88,62,255,.07); border:1px solid rgba(88,62,255,.12);
+  border-radius:8px; padding:6px 4px;
+}
+.c-day { font-size:18px; font-weight:800; line-height:1; color:var(--purple); }
+.c-mon { font-family:'DM Mono',monospace; font-size:8px; text-transform:uppercase; letter-spacing:1px; color:rgba(88,62,255,.4); }
+.c-info { flex:1; }
+.c-artist { font-size:13px; font-weight:700; margin-bottom:2px; color:#1a1a2e; }
+.c-venue { font-size:11px; color:rgba(26,26,46,.45); margin-bottom:1px; }
+.c-city-lbl { font-size:10px; color:rgba(26,26,46,.3); }
+.c-tkt {
+  flex-shrink:0; align-self:center;
+  background:rgba(88,62,255,.08); border:1px solid rgba(88,62,255,.15);
+  border-radius:6px; padding:6px 10px; font-size:14px;
+  color:var(--purple); text-decoration:none; transition:all .2s;
+}
+.c-tkt:hover { background:rgba(88,62,255,.15); }
+.empty {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; text-align:center; padding:24px;
+  font-size:11px; color:rgba(88,62,255,.4); line-height:1.8;
+  font-family:'DM Mono',monospace; letter-spacing:.5px;
+}
+
+/* ── City autocomplete ── */
+.city-ac-wrap { position:relative; flex:1; }
+.city-locate-btn {
+  flex-shrink:0;
+  width:42px; height:42px; min-height:42px;
+  background:rgba(88,62,255,.08); border:1px solid rgba(88,62,255,.15);
+  border-radius:100px; cursor:pointer; color:rgba(88,62,255,.55);
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s;
+}
+.city-locate-btn:hover { background:rgba(88,62,255,.15); color:var(--purple); }
+.city-locate-btn.loading svg { animation:rspin 1s linear infinite; }
+.ac-list {
+  position:absolute; top:calc(100% + 4px); left:0; right:0;
+  background:#fff; border-radius:12px; list-style:none;
+  box-shadow:0 8px 32px rgba(88,62,255,.15);
+  overflow:hidden; z-index:100; display:none;
+  border:1px solid rgba(88,62,255,.1);
+  max-height:200px; overflow-y:auto;
+}
+.ac-list.open { display:block; }
+.ac-list li {
+  padding:10px 16px; font-family:'Syne',sans-serif;
+  font-size:13px; color:#1a1a2e; cursor:pointer;
+  transition:background .15s;
+  display:flex; align-items:center; gap:8px;
+}
+.ac-list li:hover, .ac-list li.active { background:rgba(88,62,255,.07); }
+.ac-list li span.ac-flag { font-size:16px; }
+.ac-list li span.ac-name { flex:1; }
+.ac-list li span.ac-country { font-size:11px; color:rgba(88,62,255,.4); font-family:'DM Mono',monospace; }
+
+/* ── Bottom ad bar ── */
+.bottom-ad-bar {
+  position:fixed; bottom:0; left:0; right:0;
+  height:106px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; background:rgba(88,62,255,.92); backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,249,218,.08);
+  z-index:100;
+}
+.bottom-ad-label {
+  font-family:'DM Mono',monospace; font-size:8px; letter-spacing:3px;
+  text-transform:uppercase; color:rgba(255,249,218,.25);
+}
+.bottom-ad-placeholder {
+  width:728px; max-width:calc(100% - 32px); height:90px;
+  background:rgba(255,249,218,.04); border:1px solid rgba(255,249,218,.08);
+  border-radius:4px; display:flex; align-items:center; justify-content:center;
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px;
+  color:rgba(255,249,218,.15); text-transform:uppercase;
+}
+
+/* ── Mobile ── */
+@media (max-width:768px) {
+  html, body { overflow:auto; height:auto; }
+  #app { height:auto; }
+  .layout { flex-direction:column; padding:20px 0 130px; align-items:center; gap:16px; }
+
+  /* Flyer same padding as other elements */
+  .flyer-wrap { width:calc(100% - 32px); align-items:center; }
+  #flyerCanvas { width:100% !important; height:auto !important; max-width:100%; flex:none; border-radius:12px !important; }
+
+  /* CTAs and cards same width */
+  .flyer-btns { width:100%; max-width:100%; }
+  .right-panel { max-width:100%; width:calc(100% - 32px); overflow-y:visible; max-height:none; }
+
+  .topbar { padding:0 20px; }
+}
+@media (max-width:480px) {
+  .topbar-logo svg { height:18px; }
+  .chip-name { display:none; }
+  .btn-logout { padding:6px 12px; font-size:10px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="l-logo">
+    <svg viewBox="0 0 282 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M265.978 15.1404H255.619V55.621H261.834C264.065 55.621 265.978 53.7086 265.978 51.4773V15.1404ZM239.681 111.561V0H269.165C276.178 0 281.915 5.73741 281.915 12.7498V50.5211C281.915 57.5335 276.178 63.2709 269.165 63.2709H255.619V111.561H239.681Z" fill="#FFF9DA"/>
+      <path d="M220.532 15.1404H210.172V55.621H216.388C218.619 55.621 220.532 53.7086 220.532 51.4773V15.1404ZM194.235 111.561V0H223.719C230.732 0 236.469 5.73741 236.469 12.7498V50.5211C236.469 57.5335 230.732 63.2709 223.719 63.2709H210.172V111.561H194.235Z" fill="#FFF9DA"/>
+      <path d="M183.373 0L191.023 111.561H175.086L174.608 96.4204H165.205L164.726 111.561H148.789L156.439 0H183.373ZM165.842 81.1206H174.129L171.739 15.1404H168.073L165.842 81.1206Z" fill="#FFF9DA"/>
+      <path d="M145.602 0V15.1404H124.883V47.8118H139.067V62.9522H124.883V96.4204H145.602V111.561H108.946V0H145.602Z" fill="#FFF9DA"/>
+      <path d="M105.683 0V111.561H86.2393L75.8801 28.3683H74.9238V111.561H58.9866V0H78.43L88.9486 80.4831H89.7455V0H105.683Z" fill="#FFF9DA"/>
+      <path d="M39.8431 0H55.7804V111.561H39.8431V0Z" fill="#FFF9DA"/>
+      <path d="M15.9373 0V96.4204H36.6557V111.561H0V0H15.9373Z" fill="#FFF9DA"/>
+    </svg>
+  </div>
+  <div class="l-vinyl">
+    <div class="l-vinyl-outer"></div>
+    <div class="l-vinyl-mid"></div>
+    <div class="l-vinyl-dot"></div>
+  </div>
+  <div class="l-status" id="loadSub">
+    Conectando con Spotify
+    <span class="l-dots"><span></span><span></span><span></span></span>
+  </div>
+
+  <!-- AdSense intersticial — reemplazar con código real de Google -->
+  <div class="l-ad" id="loaderAd">
+    <div class="l-ad-label">Publicidad</div>
+    <div class="l-ad-slot">
+      <!-- google_ad_slot aquí -->
+      <div style="width:320px;height:100px;background:rgba(255,249,218,.05);border:1px solid rgba(255,249,218,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-family:'Syne',sans-serif;font-size:11px;color:rgba(255,249,218,.2);letter-spacing:2px;text-transform:uppercase;">Ad</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="ring"></div>
+  <div class="ring ring2"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 282 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M265.978 15.1404H255.619V55.621H261.834C264.065 55.621 265.978 53.7086 265.978 51.4773V15.1404ZM239.681 111.561V0H269.165C276.178 0 281.915 5.73741 281.915 12.7498V50.5211C281.915 57.5335 276.178 63.2709 269.165 63.2709H255.619V111.561H239.681Z" fill="#FFF9DA"/>
+        <path d="M220.532 15.1404H210.172V55.621H216.388C218.619 55.621 220.532 53.7086 220.532 51.4773V15.1404ZM194.235 111.561V0H223.719C230.732 0 236.469 5.73741 236.469 12.7498V50.5211C236.469 57.5335 230.732 63.2709 223.719 63.2709H210.172V111.561H194.235Z" fill="#FFF9DA"/>
+        <path d="M183.373 0L191.023 111.561H175.086L174.608 96.4204H165.205L164.726 111.561H148.789L156.439 0H183.373ZM165.842 81.1206H174.129L171.739 15.1404H168.073L165.842 81.1206Z" fill="#FFF9DA"/>
+        <path d="M145.602 0V15.1404H124.883V47.8118H139.067V62.9522H124.883V96.4204H145.602V111.561H108.946V0H145.602Z" fill="#FFF9DA"/>
+        <path d="M105.683 0V111.561H86.2393L75.8801 28.3683H74.9238V111.561H58.9866V0H78.43L88.9486 80.4831H89.7455V0H105.683Z" fill="#FFF9DA"/>
+        <path d="M39.8431 0H55.7804V111.561H39.8431V0Z" fill="#FFF9DA"/>
+        <path d="M15.9373 0V96.4204H36.6557V111.561H0V0H15.9373Z" fill="#FFF9DA"/>
+      </svg>
+    </div>
+    <div class="topbar-right">
+      <div class="chip">
+        <img id="uAvatar" src="" alt="">
+        <span class="chip-name" id="uName">...</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">↩ Salir</button>
+    </div>
+  </div>
+
+
+
+  <div class="layout">
+    <div class="flyer-wrap">
+      <canvas id="flyerCanvas"></canvas>
+      <div class="flyer-btns">
+        <button class="flyer-btn flyer-btn-outline" onclick="shareInstagram()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Instagram Story
+        </button>
+        <button class="flyer-btn flyer-btn-solid" onclick="downloadFlyer()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="time-pills">
+        <button class="tpill" onclick="setRange('short_term',this)">Último mes</button>
+        <button class="tpill active" onclick="setRange('medium_term',this)">6 meses</button>
+        <button class="tpill" onclick="setRange('long_term',this)">Todo el tiempo</button>
+      </div>
+      <div class="card">
+        <div class="card-label">Tu perfil musical</div>
+        <div id="genreDiv"><div class="empty">Cargando géneros...</div></div>
+      </div>
+      <div class="card card-fill">
+        <div class="card-label">Conciertos cercanos</div>
+        <div class="city-row">
+          <div class="city-ac-wrap">
+            <input class="city-in" id="cityIn" 
+              placeholder="📍 Tu ciudad (ej: Bogotá)"
+              autocomplete="off"
+              oninput="acFilter(this.value)"
+              onkeydown="acKey(event)">
+            <ul class="ac-list" id="acList"></ul>
+          </div>
+          <button class="city-locate-btn" id="locateBtn" onclick="detectLocation()" title="Detectar mi ubicación">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          </button>
+        </div>
+        <div id="concertDiv"><div class="empty">Ingresa tu ciudad para ver<br>conciertos de tus artistas</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom AdSense banner — 728x90 leaderboard -->
+  <div class="bottom-ad-bar">
+    <div class="bottom-ad-label">Publicidad</div>
+    <div class="bottom-ad-slot">
+      <!-- Reemplazar con código real de AdSense -->
+      <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX"></ins> -->
+      <div class="bottom-ad-placeholder">Ad · 728×90</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CANVAS CONFIG
+//  Original image: 1116 x 2000
+//  Display at 0.5x: 558 x 1000 — too tall, use 0.4x
+//  Display: 446 x 800
+// ══════════════════════════════════════════
+const SCALE   = 0.4;  // display scale
+const IMG_W   = 1080;
+const IMG_H   = 1920;
+const CW      = Math.round(IMG_W * SCALE);  // 446
+const CH      = Math.round(IMG_H * SCALE);  // 800
+
+// Zones from guide (as % of image, converted to canvas px)
+// Region 1 (title+date):  y=15.5%-23.4%  x=18.6%-81.4%
+// Region 3 (small mid):   y=24.7%-28.1%  x=36.5%-63.5%
+// Region 5 (lineup):      y=31.1%-75.1%  x=14.6%-85.3%
+
+const ZONES = {
+  title: {
+    x1: Math.round(0.117 * CW),
+    y1: Math.round(0.132 * CH),
+    x2: Math.round(0.881 * CW),
+    y2: Math.round(0.231 * CH),
+  },
+  link: {
+    x1: Math.round(0.289 * CW),
+    y1: Math.round(0.251 * CH),
+    x2: Math.round(0.708 * CW),
+    y2: Math.round(0.282 * CH),
+  },
+  day1: {
+    x1: Math.round(0.117 * CW),
+    y1: Math.round(0.362 * CH),
+    x2: Math.round(0.881 * CW),
+    y2: Math.round(0.497 * CH),
+  },
+  day2: {
+    x1: Math.round(0.118 * CW),
+    y1: Math.round(0.545 * CH),
+    x2: Math.round(0.881 * CW),
+    y2: Math.round(0.680 * CH),
+  },
+};
+
+const FESTIVAL_NAMES = [
+  'DESERT BLOOM','GOLDEN HORIZON','MIRAJE FEST',
+  'SUNDOWN SUMMIT','OASIS FEST','DUSK & DAWN',
+  'PINK DUNES','WILDFIRE FEST'
+];
+const DATES = [
+  'JULIO 18–20 · 2025','AGOSTO 8–10 · 2025',
+  'SEPTIEMBRE 5–7 · 2025','OCTUBRE 3–5 · 2025'
+];
+
+let bgImage = null;
+
+function loadBgImage() {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload  = () => { bgImage = img; resolve(); };
+    img.onerror = () => resolve();
+    img.src = '/BG_1.png';
+  });
+}
+
+function loadCustomFont() {
+  return new Promise(resolve => {
+    const font = new FontFace('AaltoDisplay', 'url(/aalto-display.otf)');
+    font.load().then(f => { document.fonts.add(f); resolve(); }).catch(() => resolve());
+  });
+}
+
+// ── Helper: fit text into a max width ────
+function fitText(ctx, text, maxW, maxSize, minSize, fontStr) {
+  let size = maxSize;
+  ctx.font = fontStr(size);
+  while (ctx.measureText(text).width > maxW && size > minSize) {
+    size -= 1;
+    ctx.font = fontStr(size);
+  }
+  return size;
+}
+
+// ── Helper: draw centered text lines ─────
+function drawLines(ctx, lines, x, startY, lineH) {
+  lines.forEach((line, i) => {
+    ctx.fillText(line, x, startY + i * lineH);
+  });
+}
+
+// ── Helper: split artists into lines that fit width ──
+function splitIntoLines(ctx, names, maxW) {
+  const lines = [];
+  let current = [];
+  names.forEach(name => {
+    const test = [...current, name].join(' · ');
+    if (ctx.measureText(test).width > maxW && current.length > 0) {
+      lines.push(current.join(' · '));
+      current = [name];
+    } else {
+      current.push(name);
+    }
+  });
+  if (current.length) lines.push(current.join(' · '));
+  return lines;
+}
+
+// ══════════════════════════════════════════
+//  DRAW FLYER — Aalto + Barlow Condensed
+// ══════════════════════════════════════════
+function drawFlyer(artists, userName) {
+  const canvas = document.getElementById('flyerCanvas');
+  const DPR    = 2;
+  canvas.width  = CW * DPR;
+  canvas.height = CH * DPR;
+  canvas.style.width  = CW + 'px';
+  canvas.style.height = CH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+  ctx.clearRect(0, 0, CW, CH);
+
+  if (bgImage) ctx.drawImage(bgImage, 0, 0, CW, CH);
+  else { ctx.fillStyle = '#cc0000'; ctx.fillRect(0,0,CW,CH); }
+
+  if (!artists.length) return;
+
+  const CREAM   = '#FFF8E7';
+  const cx      = CW / 2;
+  const pad     = CW * 0.055;
+  const maxW    = CW - pad * 2;
+  const GAP     = 8;    // between lines within a day
+  const DAY_GAP = 32;   // between day 1 and day 2
+  const FONT    = 'Barlow Condensed, sans-serif';
+
+  const fit = (text, mW, maxSize, fontStr) => {
+    let s = maxSize;
+    ctx.font = fontStr.replace('?', s);
+    while (ctx.measureText(text).width > mW && s > 8) { s--; ctx.font = fontStr.replace('?', s); }
+    return s;
+  };
+
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'top';
+  ctx.letterSpacing = '-0.5px';
+
+  // ── FESTIVAL NAME ─────────────────────────
+  const festName  = 'LINEAPP FESTIVAL';
+  const titleY    = CH * 0.07;  // more top padding
+  const titleSize = fit(festName, maxW, 82, `?px AaltoDisplay, Anton, sans-serif`);
+  ctx.font        = `${titleSize}px AaltoDisplay, Anton, sans-serif`;
+  ctx.fillStyle   = CREAM;
+  ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 14;
+  ctx.fillText(festName, cx, titleY);
+  ctx.shadowBlur  = 0;
+
+  // ── PILL ──────────────────────────────────
+  ctx.letterSpacing = '0px';
+  const pillText  = 'Crea el tuyo en www.lineapp.club';
+  const pillFontS = 15;
+  ctx.font        = `600 ${pillFontS}px ${FONT}`;
+  const pillTW    = ctx.measureText(pillText).width;
+  const pillPadX  = 18, pillPadY = 7;
+  const pillW     = pillTW + pillPadX * 2;
+  const pillH     = pillFontS + pillPadY * 2;
+  const pillY     = titleY + titleSize + 12;
+  const pillX     = cx - pillW / 2;
+
+  ctx.beginPath();
+  ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
+  ctx.fillStyle = CREAM; ctx.fill();
+  ctx.fillStyle    = '#111';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(pillText, cx, pillY + pillH / 2);
+  ctx.textBaseline = 'top';
+  ctx.letterSpacing = '-0.5px';
+
+  // ── ARTISTS ───────────────────────────────
+  const half = Math.ceil(artists.length / 2);
+  const day1 = artists.slice(0, half);
+  const day2 = artists.slice(half);
+
+  // Headliner: Aalto Display — fit to width but cap at 64px
+  const h1text = day1[0]?.name.toUpperCase() || '';
+  const h2text = day2[0]?.name.toUpperCase() || '';
+  const headSize = Math.min(
+    fit(h1text, maxW, 64, `?px AaltoDisplay, Anton, sans-serif`),
+    fit(h2text, maxW, 64, `?px AaltoDisplay, Anton, sans-serif`)
+  );
+
+  // Non-headliners: all same fixed size in Barlow Condensed
+  // Find the size that fits the longest tier-2 line across both days
+  const getNonHead = (day) => day.slice(1).map(a => a.name.toUpperCase());
+  const allNonHead = [...getNonHead(day1), ...getNonHead(day2)];
+  // Tier 2: artists 1-3 per day (3 on one line)
+  const t2d1 = day1.slice(1,4).map(a=>a.name.toUpperCase()).join(' - ');
+  const t2d2 = day2.slice(1,4).map(a=>a.name.toUpperCase()).join(' - ');
+  // Pick a fixed legible size: fit to the longest tier-2 line, max 38px min 26px
+  const nonHeadSize = Math.min(
+    t2d1 ? fit(t2d1, maxW, 62, `700 ?px ${FONT}`) : 62,
+    t2d2 ? fit(t2d2, maxW, 62, `700 ?px ${FONT}`) : 62
+  );
+
+  // T3 lines: artists 4+ split into pairs
+  const getT3Lines = (day) => {
+    const names = day.slice(4, 9).map(a => a.name.toUpperCase());
+    if (!names.length) return [];
+    const mid = Math.ceil(names.length / 2);
+    return names.length > 2 ? [names.slice(0, mid), names.slice(mid)] : [names];
+  };
+  const t3lines1 = getT3Lines(day1);
+  const t3lines2 = getT3Lines(day2);
+
+  // Day block height
+  const dayHeight = (t3lines) => {
+    let h = headSize + 8;              // headliner
+    h += nonHeadSize + GAP;            // tier 2 (1 line)
+    h += nonHeadSize * t3lines.length; // tier 3 lines
+    if (t3lines.length > 0) h += GAP * t3lines.length;
+    return h;
+  };
+
+  const drawDay = (dayArtists, t3lines, startY) => {
+    let y = startY;
+    ctx.shadowColor = 'rgba(0,0,0,.65)';
+
+    // Headliner — Aalto Display
+    ctx.font = `${headSize}px AaltoDisplay, Anton, sans-serif`;
+    ctx.fillStyle = CREAM; ctx.shadowBlur = 12;
+    ctx.fillText(dayArtists[0]?.name.toUpperCase() || '', cx, y);
+    y += headSize + 8;
+
+    // Tier 2 — Barlow Condensed 700
+    const t2names = dayArtists.slice(1,4).map(a => a.name.toUpperCase());
+    if (t2names.length) {
+      ctx.font = `700 ${nonHeadSize}px ${FONT}`;
+      ctx.fillStyle = CREAM; ctx.shadowBlur = 6;
+      ctx.fillText(t2names.join(' - '), cx, y);
+      y += nonHeadSize + GAP;
+    }
+
+    // Tier 3 — Barlow Condensed 600, same size as tier 2
+    if (t3lines.length) {
+      ctx.font = `600 ${nonHeadSize}px ${FONT}`;
+      ctx.fillStyle = 'rgba(255,248,231,.8)'; ctx.shadowBlur = 4;
+      t3lines.forEach(line => {
+        ctx.fillText(line.join(' - '), cx, y);
+        y += nonHeadSize + GAP;
+      });
+    }
+
+    ctx.shadowBlur = 0;
+    return y - GAP;
+  };
+
+  // Center lineup vertically between pill and raccoon
+  const areaTop    = pillY + pillH + CH * 0.13;
+  const areaBottom = CH * 0.63;
+  const totalH     = dayHeight(t3lines1) + DAY_GAP + dayHeight(t3lines2);
+  const lineupY    = areaTop + (areaBottom - areaTop - totalH) / 2;
+
+  const day1End = drawDay(day1, t3lines1, lineupY);
+  drawDay(day2, t3lines2, day1End + DAY_GAP);
+
+  // ── Watermark ────────────────────────────
+  ctx.textAlign    = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.font         = `400 10px ${FONT}`;
+  ctx.fillStyle    = 'rgba(255,248,231,.28)';
+  ctx.fillText(`♪ ${userName} · lineapp.club`, CW - 12, CH - 10);
+}
+
+// ══════════════════════════════════════════
+//  STATE & INIT
+// ══════════════════════════════════════════
+let token = '', timeRange = 'medium_term', artists = [], userName = '';
+
+// ── City autocomplete data ──
+const CITIES = [
+  {name:'Bogotá',country:'Colombia',flag:'🇨🇴'},
+  {name:'Medellín',country:'Colombia',flag:'🇨🇴'},
+  {name:'Cali',country:'Colombia',flag:'🇨🇴'},
+  {name:'Barranquilla',country:'Colombia',flag:'🇨🇴'},
+  {name:'Cartagena',country:'Colombia',flag:'🇨🇴'},
+  {name:'Buenos Aires',country:'Argentina',flag:'🇦🇷'},
+  {name:'Córdoba',country:'Argentina',flag:'🇦🇷'},
+  {name:'Rosario',country:'Argentina',flag:'🇦🇷'},
+  {name:'Ciudad de México',country:'México',flag:'🇲🇽'},
+  {name:'Guadalajara',country:'México',flag:'🇲🇽'},
+  {name:'Monterrey',country:'México',flag:'🇲🇽'},
+  {name:'Santiago',country:'Chile',flag:'🇨🇱'},
+  {name:'Lima',country:'Perú',flag:'🇵🇪'},
+  {name:'Caracas',country:'Venezuela',flag:'🇻🇪'},
+  {name:'Quito',country:'Ecuador',flag:'🇪🇨'},
+  {name:'Guayaquil',country:'Ecuador',flag:'🇪🇨'},
+  {name:'La Paz',country:'Bolivia',flag:'🇧🇴'},
+  {name:'Asunción',country:'Paraguay',flag:'🇵🇾'},
+  {name:'Montevideo',country:'Uruguay',flag:'🇺🇾'},
+  {name:'São Paulo',country:'Brasil',flag:'🇧🇷'},
+  {name:'Rio de Janeiro',country:'Brasil',flag:'🇧🇷'},
+  {name:'Brasília',country:'Brasil',flag:'🇧🇷'},
+  {name:'Belo Horizonte',country:'Brasil',flag:'🇧🇷'},
+  {name:'Madrid',country:'España',flag:'🇪🇸'},
+  {name:'Barcelona',country:'España',flag:'🇪🇸'},
+  {name:'Sevilla',country:'España',flag:'🇪🇸'},
+  {name:'Valencia',country:'España',flag:'🇪🇸'},
+  {name:'New York',country:'USA',flag:'🇺🇸'},
+  {name:'Los Angeles',country:'USA',flag:'🇺🇸'},
+  {name:'Chicago',country:'USA',flag:'🇺🇸'},
+  {name:'Miami',country:'USA',flag:'🇺🇸'},
+  {name:'Houston',country:'USA',flag:'🇺🇸'},
+  {name:'Las Vegas',country:'USA',flag:'🇺🇸'},
+  {name:'London',country:'UK',flag:'🇬🇧'},
+  {name:'Manchester',country:'UK',flag:'🇬🇧'},
+  {name:'Paris',country:'Francia',flag:'🇫🇷'},
+  {name:'Berlin',country:'Alemania',flag:'🇩🇪'},
+  {name:'Amsterdam',country:'Países Bajos',flag:'🇳🇱'},
+  {name:'Toronto',country:'Canadá',flag:'🇨🇦'},
+  {name:'Sydney',country:'Australia',flag:'🇦🇺'},
+  {name:'Tokyo',country:'Japón',flag:'🇯🇵'},
+];
+
+let acIndex = -1;
+
+async function detectLocation() {
+  if (!navigator.geolocation) {
+    alert('Tu navegador no soporta geolocalización');
+    return;
+  }
+  const btn = document.getElementById('locateBtn');
+  const input = document.getElementById('cityIn');
+  btn.classList.add('loading');
+  input.placeholder = 'Detectando ubicación...';
+
+  navigator.geolocation.getCurrentPosition(
+    async ({ coords }) => {
+      try {
+        // Free reverse geocoding with nominatim
+        const r = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`,
+          { headers: { 'Accept-Language': 'es' } }
+        );
+        const data = await r.json();
+        const city = data.address?.city
+          || data.address?.town
+          || data.address?.village
+          || data.address?.county
+          || '';
+        if (city) {
+          input.value = city;
+          input.placeholder = '📍 Tu ciudad (ej: Bogotá)';
+          fetchConcerts(city);
+        } else {
+          input.placeholder = '📍 Tu ciudad (ej: Bogotá)';
+        }
+      } catch {
+        input.placeholder = '📍 Tu ciudad (ej: Bogotá)';
+      }
+      btn.classList.remove('loading');
+    },
+    () => {
+      input.placeholder = '📍 Tu ciudad (ej: Bogotá)';
+      btn.classList.remove('loading');
+      alert('No se pudo obtener tu ubicación. Escríbela manualmente.');
+    },
+    { timeout: 8000 }
+  );
+}
+
+function acFilter(val) {
+  const list = document.getElementById('acList');
+  if (!val || val.length < 2) { list.classList.remove('open'); return; }
+  const q = val.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const matches = CITIES.filter(c => {
+    const n = c.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    return n.startsWith(q);
+  }).slice(0, 6);
+  if (!matches.length) { list.classList.remove('open'); return; }
+  acIndex = -1;
+  list.innerHTML = matches.map((c,i) => `
+    <li onclick="acSelect('${c.name}')">
+      <span class="ac-flag">${c.flag}</span>
+      <span class="ac-name">${c.name}</span>
+      <span class="ac-country">${c.country}</span>
+    </li>`).join('');
+  list.classList.add('open');
+}
+
+function acSelect(name) {
+  const input = document.getElementById('cityIn');
+  const list  = document.getElementById('acList');
+  input.value = name;
+  list.classList.remove('open');
+  fetchConcerts(name);
+}
+
+function acKey(e) {
+  const list  = document.getElementById('acList');
+  const items = list.querySelectorAll('li');
+  if (!list.classList.contains('open')) {
+    if (e.key === 'Enter') fetchConcerts(e.target.value.trim());
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    acIndex = Math.min(acIndex + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    acIndex = Math.max(acIndex - 1, -1);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (acIndex >= 0) items[acIndex].click();
+    else { list.classList.remove('open'); fetchConcerts(e.target.value.trim()); }
+    return;
+  } else if (e.key === 'Escape') {
+    list.classList.remove('open'); return;
+  }
+  items.forEach((el,i) => el.classList.toggle('active', i === acIndex));
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.city-ac-wrap')) {
+    document.getElementById('acList')?.classList.remove('open');
+  }
+});
+
+async function init() {
+  const p = new URLSearchParams(window.location.search);
+  token = p.get('token');
+  if (!token) { window.location.href = '/'; return; }
+  window.history.replaceState({}, '', '/app');
+
+  setSub('Armando tu lineup perfecto');
+
+  // Run data loading and minimum 5s timer in parallel
+  const [,,,] = await Promise.all([
+    loadBgImage(),
+    loadCustomFont(),
+    document.fonts.ready,
+    new Promise(r => setTimeout(r, 5000))  // minimum 5s for ad
+  ]);
+
+  setSub('Analizando tu historial musical');
+  await loadUser();
+  setSub('Eligiendo a los headliners');
+  await loadArtists();
+  buildAll();
+
+  // Fade out loader smoothly
+  const loader = document.getElementById('loading');
+  loader.style.transition = 'opacity .5s';
+  loader.style.opacity = '0';
+  setTimeout(() => {
+    loader.style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+  }, 500);
+}
+
+function setSub(t) {
+  document.getElementById('loadSub').innerHTML = t +
+    ' <span class="l-dots"><span></span><span></span><span></span></span>';
+}
+
+async function loadUser() {
+  try {
+    const r = await fetch(`/api/me?token=${token}`);
+    const d = await r.json();
+    userName = d.display_name || 'Tú';
+    document.getElementById('uName').textContent = userName;
+    document.getElementById('uAvatar').src = d.images?.[0]?.url ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=333&color=fff`;
+  } catch {}
+}
+
+async function loadArtists() {
+  try {
+    const r = await fetch(`/api/top-artists?token=${token}&time_range=${timeRange}`);
+    const d = await r.json();
+    artists = d.items || [];
+  } catch {}
+}
+
+function buildAll() {
+  drawFlyer(artists, userName);
+  buildGenrePanel();
+}
+
+
+
+function buildGenrePanel() {
+  const counts = {};
+  artists.forEach(a => a.genres.forEach(g => { counts[g] = (counts[g]||0)+1; }));
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const max = top[0]?.[1] || 1;
+  document.getElementById('genreDiv').innerHTML = top.map(([g,c]) => `
+    <div class="g-row">
+      <div class="g-top"><span>${g}</span><span>${Math.round((c/artists.length)*100)}%</span></div>
+      <div class="g-bg"><div class="g-fill" style="width:0%" data-w="${(c/max)*100}"></div></div>
+    </div>
+  `).join('');
+  setTimeout(() => document.querySelectorAll('.g-fill').forEach(b => b.style.width = b.dataset.w+'%'), 100);
+}
+
+async function fetchConcerts(city) {
+  if (!city) return;
+  const el = document.getElementById('concertDiv');
+  el.innerHTML = '<div class="empty">Buscando conciertos...</div>';
+  try {
+    const names = artists.slice(0,10).map(a=>a.name).join(',');
+    const r = await fetch(`/api/concerts?artists=${encodeURIComponent(names)}&city=${encodeURIComponent(city)}`);
+    const data = await r.json();
+    if (!data.length) { el.innerHTML = `<div class="empty">Sin conciertos en <strong>${city}</strong> próximamente</div>`; return; }
+    el.innerHTML = data.map(c => {
+      const d = new Date(c.date);
+      return `<div class="c-row">
+        <div class="c-cal"><div class="c-day">${d.getDate()}</div><div class="c-mon">${d.toLocaleString('es',{month:'short'}).toUpperCase()}</div></div>
+        <div class="c-info"><div class="c-artist">${c.artist}</div><div class="c-venue">${c.venue}</div><div class="c-city-lbl">${c.city}</div></div>
+        ${c.url?`<a href="${c.url}" target="_blank" class="c-tkt">🎟</a>`:''}
+      </div>`;
+    }).join('');
+  } catch { el.innerHTML = '<div class="empty">Error al buscar conciertos</div>'; }
+}
+
+async function setRange(range, btn) {
+  timeRange = range;
+  document.querySelectorAll('.tpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  await regenerate();
+}
+
+async function regenerate() {
+  document.getElementById('loading').style.display = 'flex';
+  setSub('Armando tu lineup perfecto');
+  await loadArtists();
+  buildAll();
+  const city = document.getElementById('cityIn').value.trim();
+  if (city) await fetchConcerts(city);
+  document.getElementById('loading').style.display = 'none';
+}
+
+function logout() { window.location.href = '/'; }
+
+function downloadFlyer() {
+  const canvas = document.getElementById('flyerCanvas');
+  const link   = document.createElement('a');
+  link.download = 'mi-festival-lineapp.png';
+  link.href     = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function shareInstagram() {
+  const canvas = document.getElementById('flyerCanvas');
+  // On mobile: use Web Share API with image blob (shows Instagram as option)
+  if (navigator.canShare) {
+    canvas.toBlob(async blob => {
+      const file = new File([blob], 'mi-festival-lineapp.png', { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Mi festival — LineApp', text: 'Mira mi lineup perfecto en lineapp.club' });
+        return;
+      }
+      // Fallback: download
+      downloadFlyer();
+      setTimeout(() => alert('📸 Imagen descargada. Ábrela desde Instagram > Historias > Galería'), 500);
+    });
+  } else {
+    // Desktop: download + instructions
+    downloadFlyer();
+    setTimeout(() => alert('📸 Imagen descargada. En Instagram, ve a Historias y selecciónala desde tu galería.'), 500);
+  }
+}
+
+function shareTwitter() {
+  const text = encodeURIComponent('🎵 Acabo de crear mi festival perfecto con @lineappclub ¿Cómo sería el tuyo?');
+  const url  = encodeURIComponent('https://lineapp.club');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=560,height=420');
+}
+
+function shareFlyer() {
+  shareInstagram();
+}
+
+document.getElementById('cityIn').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchConcerts(e.target.value.trim());
+});
+
+init();
+</script>
+</body>
+</html>
