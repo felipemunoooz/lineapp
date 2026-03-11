@@ -236,7 +236,7 @@ body::before {
 /* ── Right column ── */
 .right-panel {
   flex:1; min-width:280px; max-width:460px;
-  display:flex; flex-direction:column; gap:0;
+  display:flex; flex-direction:column; gap:14px;
 }
 
 
@@ -364,8 +364,8 @@ body::before {
   letter-spacing:.8px; text-transform:uppercase; color:rgba(88,62,255,.55);
 }
 .insight-value {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:16px;
-  color:#1a1a2e; line-height:1.2; margin-top:1px;
+  font-family:'Syne', sans-serif; font-weight:700; font-size:15px;
+  color:#1a1a2e; line-height:1.35; margin-top:2px;
 }
 .insight-sub {
   font-family:'Syne', sans-serif; font-size:11px; font-weight:400;
@@ -385,7 +385,7 @@ body::before {
 }
 .micro-chip:last-child { border-right:none; }
 .micro-val {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:16px; color:#583EFF;
+  font-family:'Syne', sans-serif; font-weight:700; font-size:16px; color:#583EFF;
   line-height:1;
 }
 .micro-key {
@@ -395,17 +395,12 @@ body::before {
 
 /* diagnosis */
 .diagnosis-block {
-  background:linear-gradient(135deg,#f0eeff,#fff0f6);
-  border:1px solid rgba(88,62,255,.1); border-radius:14px; padding:16px 18px;
+  background:#f0eeff;
+  border-radius:14px 14px 14px 4px; padding:14px 16px;
   animation:insightIn .3s .16s ease both;
+  position:relative;
 }
-.diagnosis-label {
-  font-family:'Syne', sans-serif; font-size:10px; font-weight:700;
-  letter-spacing:1.5px; text-transform:uppercase;
-  color:rgba(255,62,138,.6); margin-bottom:8px;
-  display:flex; align-items:center; gap:8px;
-}
-.diagnosis-label::before { content:''; width:16px; height:1.5px; background:rgba(255,62,138,.3); flex-shrink:0; }
+.diagnosis-label { display:none; }
 .diagnosis-text {
   font-family:'Syne', sans-serif; font-weight:700; font-size:14px; line-height:1.65;
   color:#1a1a2e;
@@ -597,15 +592,13 @@ body::before {
     </div>
 
     <div class="right-panel">
+      <div class="time-pills">
+        <button class="tpill" onclick="setRange('short_term',this)">Último mes</button>
+        <button class="tpill active" onclick="setRange('medium_term',this)">6 meses</button>
+        <button class="tpill" onclick="setRange('long_term',this)">Todo el tiempo</button>
+      </div>
       <div class="card insights-card">
-        <div class="insights-card-top">
-          <div class="card-label" id="roastLabel">Music Insights</div>
-          <div class="time-pills">
-            <button class="tpill" onclick="setRange('short_term',this)">Último mes</button>
-            <button class="tpill active" onclick="setRange('medium_term',this)">6 meses</button>
-            <button class="tpill" onclick="setRange('long_term',this)">Todo el tiempo</button>
-          </div>
-        </div>
+        <div class="card-label" id="roastLabel">Music Insights</div>
         <div id="genreDiv"><div class="empty">Analizando tu música...</div></div>
       </div>
       <div class="card concert-card card-fill">
@@ -1166,7 +1159,7 @@ async function buildGenrePanel() {
 
   const isEs = insightsLang === 'es';
   const isPt = insightsLang === 'pt';
-  labelEl.textContent = isEs ? 'Music Insights ✦' : isPt ? 'Music Insights ✦' : 'Music Insights ✦';
+  labelEl.textContent = 'Music Insights';
 
   // Show skeletons
   el.innerHTML = `<div class="insights-loading">
@@ -1272,7 +1265,6 @@ async function buildGenrePanel() {
       </div>
 
       <div class="diagnosis-block">
-        <div class="diagnosis-label">${diagLabel}</div>
         <div class="diagnosis-text">${roastText}</div>
       </div>
     </div>`;
