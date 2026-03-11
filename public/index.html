@@ -48,6 +48,9 @@ nav {
   position:fixed; top:0; left:0; right:0; z-index:100;
   padding:20px 40px;
   display:flex; align-items:center; justify-content:space-between;
+  background:rgba(88,62,255,.55); backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,249,218,.08);
 }
 .nav-logo svg { height:34px; width:auto; }
 .nav-right { display:flex; align-items:center; gap:32px; }
@@ -96,13 +99,13 @@ nav {
 .hero-sub strong { color:var(--cream); font-weight:700; }
 .btn-main {
   display:inline-flex; align-items:center; gap:14px;
-  background:var(--cream); color:var(--dark);
+  background:#ffffff; color:var(--dark);
   text-decoration:none; border-radius:6px; padding:16px 36px;
   font-family:'Syne',sans-serif; font-weight:700; font-size:14px;
   letter-spacing:0.5px; text-transform:none; font-style:normal;
   transition:transform .25s, box-shadow .25s;
   opacity:0; animation:fadeUp .8s .65s forwards;
-  border: 2px solid var(--cream);
+  border: 2px solid #ffffff;
   border-radius:100px;
   padding:16px 28px;
   position:relative; overflow:hidden;
@@ -114,7 +117,7 @@ nav {
   transform:skewX(-20deg);
   transition:left .5s ease;
 }
-.btn-main:hover { transform:scale(1.045); box-shadow:0 0 28px rgba(255,249,218,.35), 0 0 60px rgba(255,249,218,.15); }
+.btn-main:hover { transform:scale(1.045); box-shadow:0 0 28px rgba(255,255,255,.35), 0 0 60px rgba(255,255,255,.15); }
 .btn-main:hover::after { left:140%; }
 .hero-note {
   margin-top:18px; font-family:'DM Mono',monospace;
