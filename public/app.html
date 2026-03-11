@@ -338,7 +338,7 @@ body::before {
 @keyframes insightIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 @keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-.insights-wrap { display:flex; flex-direction:column; gap:12px; }
+.insights-wrap { display:flex; flex-direction:column; gap:12px; flex:1; }
 
 /* 2×2 grid */
 .insights-grid {
@@ -375,10 +375,11 @@ body::before {
   background:#f6f5ff; border-radius:12px; overflow:hidden;
   animation:insightIn .3s .08s ease both;
   border:1px solid rgba(88,62,255,.07);
+  flex:1;
 }
 .micro-chip {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:12px 4px; gap:3px;
+  padding:0; gap:3px;
   border-right:1px solid rgba(88,62,255,.08);
 }
 .micro-chip:last-child { border-right:none; }
@@ -394,7 +395,7 @@ body::before {
 
 
 /* skeleton */
-.insights-loading { display:flex; flex-direction:column; gap:8px; }
+.insights-loading { display:flex; flex-direction:column; gap:12px; flex:1; }
 .insights-skel {
   border-radius:14px;
   background:linear-gradient(90deg,#f0eeff 25%,#e8e4ff 50%,#f0eeff 75%);
@@ -1150,9 +1151,11 @@ async function buildGenrePanel() {
 
   // Show skeletons
   el.innerHTML = `<div class="insights-loading">
-    <div class="insights-skel" style="height:140px"></div>
-    <div class="insights-skel" style="height:52px;opacity:.7"></div>
-    <div class="insights-skel" style="height:80px;opacity:.5"></div>
+    <div class="insights-grid" style="flex:1">
+      <div class="insights-skel" style="height:100%;min-height:110px"></div>
+      <div class="insights-skel" style="height:100%;min-height:110px;opacity:.85"></div>
+    </div>
+    <div class="insights-skel" style="height:56px;opacity:.6;border-radius:12px"></div>
   </div>`;
 
   const stats = insightsComputeLocal(insightsArtists);
