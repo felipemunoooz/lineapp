@@ -187,7 +187,7 @@ body::before {
 .layout {
   flex:1;
   display:flex; gap:28px; padding:24px 32px 130px;
-  justify-content:center; align-items:center;
+  justify-content:center; align-items:flex-start;
   position:relative; z-index:1;
 }
 
@@ -236,25 +236,18 @@ body::before {
 /* ── Right column ── */
 .right-panel {
   flex:1; min-width:280px; max-width:460px;
-  display:flex; flex-direction:column; gap:14px;
+  display:flex; flex-direction:column; gap:12px;
+  height:682px;
 }
 
 
 /* ── Tabs ── */
-.time-pills {
-  display:flex; gap:3px; background:rgba(88,62,255,.06);
-  border-radius:100px; padding:3px;
-}
-.insights-card-top {
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:14px;
-}
-.insights-card-top .card-label { margin-bottom:0 !important; }
-.insights-card { flex:1; display:flex; flex-direction:column; margin-bottom:14px; }
-.concert-card  { flex:1; display:flex; flex-direction:column; }
+
+.insights-card { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.concert-card  { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 .tpill {
-  display:flex; align-items:center; justify-content:center;
-  border-radius:100px; border:none; background:none; white-space:nowrap;
+  flex:1; display:flex; align-items:center; justify-content:center;
+  border-radius:100px; border:none; background:none;
   color:rgba(88,62,255,.45); font-family:'Syne',sans-serif;
   font-size:13px; font-weight:700; letter-spacing:.3px;
   cursor:pointer; transition:all .2s; white-space:nowrap;
