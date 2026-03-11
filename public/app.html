@@ -350,7 +350,7 @@ body::before {
   transition:background .2s;
 }
 .insight-cell:hover { background:rgba(88,62,255,.08); }
-.insight-icon { font-size:18px; margin-bottom:2px; line-height:1; }
+.insight-icon { width:32px; height:32px; margin-bottom:2px; display:flex; align-items:center; justify-content:center; background:rgba(88,62,255,.08); border-radius:9px; }
 .insight-label {
   font-family:'DM Mono', monospace; font-size:8.5px; letter-spacing:1.5px;
   text-transform:uppercase; color:rgba(88,62,255,.4);
@@ -364,17 +364,6 @@ body::before {
   color:rgba(26,26,46,.35); line-height:1.5;
 }
 
-/* chaos bar */
-.chaos-bar-wrap {
-  margin-top:5px; height:3px; border-radius:100px;
-  background:rgba(88,62,255,.1); overflow:hidden;
-}
-.chaos-bar-fill {
-  height:100%; border-radius:100px;
-  background:linear-gradient(90deg,#583EFF,#FF3E8A);
-  transition:width .8s cubic-bezier(.4,0,.2,1);
-}
-
 /* micro stats chips */
 .micro-stats {
   display:flex; flex-wrap:wrap; gap:6px;
@@ -386,7 +375,7 @@ body::before {
   border-radius:100px; padding:5px 12px;
 }
 .micro-val {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:13px; color:#583EFF;
+  font-family:'Syne', sans-serif; font-weight:700; font-size:14px; color:#583EFF;
 }
 .micro-key {
   font-family:'DM Mono', monospace; font-size:8.5px; letter-spacing:.8px;
@@ -1190,52 +1179,52 @@ async function buildGenrePanel() {
 
   const insights = isEs ? [
     {
-      icon: '🌀', label: 'Índice de caos',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 7.38 16.75M12 22A10 10 0 0 1 4.62 5.25"/><path d="M12 8a4 4 0 0 1 2.96 6.7M12 16a4 4 0 0 1-2.96-6.7"/></svg>', label: 'Índice de caos',
       value: chaosLabel,
       bar: stats.chaosScore,
       sub: `${stats.uniqueGenres} géneros conviviendo sin supervisión`,
       badge: { text: `${stats.chaosScore}%`, cls: chaosBadge }
     },
     {
-      icon: '💎', label: 'Rareza de gusto',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9"/><polyline points="2 9 12 12 22 9"/><line x1="12" y1="22" x2="12" y2="12"/><line x1="6" y1="3" x2="12" y2="12"/><line x1="18" y1="3" x2="12" y2="12"/></svg>', label: 'Rareza de gusto',
       value: rarityLabel,
       sub: stats.rarityScore > 60 ? 'Tu lineup no lo haría nadie más' : 'Reconocible pero con carácter propio',
       badge: { text: rarityLabel, cls: rarityBadge }
     },
     {
-      icon: '🎪', label: 'Compatibilidad de festival',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>', label: 'Compatibilidad de festival',
       value: `${compatPct}% de usuarios`,
       sub: 'harían un lineup parecido al tuyo',
       badge: null
     },
     {
-      icon: '⚡', label: 'Energía del lineup',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', label: 'Energía del lineup',
       value: stats.heavyCount > 2 ? 'Mosh pit garantizado' : stats.mainstreamCount > 3 ? 'Singalong seguro' : 'Viaje emocional completo',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} artistas de fosa + ${stats.mainstreamCount} de escenario principal` : `${insightsArtists.length} artistas, ${stats.uniqueGenres} estados de ánimo`,
       badge: null
     }
   ] : [
     {
-      icon: '🌀', label: 'Chaos Index',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 7.38 16.75M12 22A10 10 0 0 1 4.62 5.25"/><path d="M12 8a4 4 0 0 1 2.96 6.7M12 16a4 4 0 0 1-2.96-6.7"/></svg>', label: 'Chaos Index',
       value: chaosLabel,
       bar: stats.chaosScore,
       sub: `${stats.uniqueGenres} genres coexisting without supervision`,
       badge: { text: `${stats.chaosScore}%`, cls: chaosBadge }
     },
     {
-      icon: '💎', label: 'Taste Rarity',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9"/><polyline points="2 9 12 12 22 9"/><line x1="12" y1="22" x2="12" y2="12"/><line x1="6" y1="3" x2="12" y2="12"/><line x1="18" y1="3" x2="12" y2="12"/></svg>', label: 'Taste Rarity',
       value: rarityLabel,
       sub: stats.rarityScore > 60 ? 'Nobody else would make this lineup' : 'Recognizable but with character',
       badge: { text: rarityLabel, cls: rarityBadge }
     },
     {
-      icon: '🎪', label: 'Festival Compatibility',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>', label: 'Festival Compatibility',
       value: `${compatPct}% of users`,
       sub: 'would build a similar lineup to yours',
       badge: null
     },
     {
-      icon: '⚡', label: 'Lineup Energy',
+      icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', label: 'Lineup Energy',
       value: stats.heavyCount > 2 ? 'Mosh pit guaranteed' : stats.mainstreamCount > 3 ? 'Singalong for sure' : 'Full emotional journey',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} pit artists + ${stats.mainstreamCount} main stage` : `${insightsArtists.length} artists, ${stats.uniqueGenres} moods`,
       badge: null
@@ -1279,7 +1268,6 @@ async function buildGenrePanel() {
             <div class="insight-icon">${ins.icon}</div>
             <div class="insight-label">${ins.label}</div>
             <div class="insight-value">${ins.value}</div>
-            ${ins.bar !== undefined ? `<div class="chaos-bar-wrap"><div class="chaos-bar-fill" style="width:0%" data-w="${ins.bar}%"></div></div>` : ''}
             ${ins.sub ? '<div class="insight-sub">'+ins.sub+'</div>' : ''}
           </div>`).join('')}
       </div>
@@ -1296,12 +1284,7 @@ async function buildGenrePanel() {
         <div class="diagnosis-text">${roastText}</div>
       </div>
     </div>`;
-  // Animate chaos bar
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.chaos-bar-fill').forEach(b => {
-      setTimeout(() => { b.style.width = b.dataset.w; }, 100);
-    });
-  });
+
 }
 
 
