@@ -334,82 +334,80 @@ body::before {
 }
 
 /* ── Music Insights card ── */
-.insights-wrap { display:flex; flex-direction:column; gap:10px; }
-.insight-item {
-  display:flex; align-items:center; gap:12px;
-  background:rgba(88,62,255,.05); border-radius:14px;
-  padding:12px 14px; transition:background .2s; animation:insightIn .35s ease both;
-}
-.insight-item:hover { background:rgba(88,62,255,.09); }
 @keyframes insightIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
-.insight-icon {
-  width:36px; height:36px; border-radius:10px; flex-shrink:0;
-  background:rgba(88,62,255,.1);
-  display:flex; align-items:center; justify-content:center; font-size:16px;
+@keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.insights-wrap { display:flex; flex-direction:column; gap:12px; }
+
+/* 2x2 grid */
+.insights-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  animation:insightIn .3s ease both;
 }
-.insight-body { flex:1; min-width:0; }
+.insight-cell {
+  background:rgba(88,62,255,.05); border-radius:14px;
+  padding:12px 12px 11px; display:flex; flex-direction:column; gap:4px;
+  transition:background .2s;
+}
+.insight-cell:hover { background:rgba(88,62,255,.08); }
+.insight-icon { font-size:18px; margin-bottom:2px; line-height:1; }
 .insight-label {
-  font-family:'DM Mono', monospace; font-size:9px; letter-spacing:1.5px;
-  text-transform:uppercase; color:rgba(88,62,255,.45); margin-bottom:2px;
+  font-family:'DM Mono', monospace; font-size:8.5px; letter-spacing:1.5px;
+  text-transform:uppercase; color:rgba(88,62,255,.4);
 }
 .insight-value {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:13.5px;
-  color:#1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-family:'Syne', sans-serif; font-weight:800; font-size:13px;
+  color:#1a1a2e; line-height:1.2;
 }
 .insight-sub {
-  font-family:'DM Mono', monospace; font-size:10px;
-  color:rgba(26,26,46,.4); margin-top:1px; line-height:1.4;
+  font-family:'DM Mono', monospace; font-size:9.5px;
+  color:rgba(26,26,46,.38); line-height:1.45;
 }
-.insight-badge {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:11px;
-  padding:3px 9px; border-radius:100px; flex-shrink:0;
-}
-.badge-high { background:rgba(255,62,138,.12); color:#FF3E8A; }
-.badge-mid  { background:rgba(88,62,255,.1);   color:#583EFF; }
-.badge-low  { background:rgba(26,26,46,.07);   color:rgba(26,26,46,.5); }
 
-.roast-final {
-  margin-top:4px;
-  background:linear-gradient(135deg,rgba(88,62,255,.08),rgba(255,62,138,.06));
-  border:1px solid rgba(88,62,255,.12); border-radius:16px; padding:16px;
-  animation:insightIn .4s .2s ease both;
+/* micro stats row */
+.micro-stats {
+  display:flex; border-radius:12px; overflow:hidden;
+  background:rgba(88,62,255,.04); border:1px solid rgba(88,62,255,.07);
+  animation:insightIn .3s .1s ease both;
 }
-.roast-final-label {
-  font-family:'DM Mono', monospace; font-size:9px; letter-spacing:2px;
-  text-transform:uppercase; color:rgba(255,62,138,.6); margin-bottom:8px;
+.micro-stat {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:10px 6px; gap:2px;
+  border-right:1px solid rgba(88,62,255,.07);
+}
+.micro-stat:last-child { border-right:none; }
+.micro-val {
+  font-family:'Syne', sans-serif; font-weight:800; font-size:14px; color:#583EFF;
+}
+.micro-key {
+  font-family:'DM Mono', monospace; font-size:8px; letter-spacing:1px;
+  text-transform:uppercase; color:rgba(26,26,46,.35); text-align:center;
+}
+
+/* diagnosis */
+.diagnosis-block {
+  background:linear-gradient(135deg,rgba(88,62,255,.07),rgba(255,62,138,.05));
+  border:1px solid rgba(88,62,255,.1); border-radius:14px; padding:14px 16px;
+  animation:insightIn .3s .2s ease both;
+}
+.diagnosis-label {
+  font-family:'DM Mono', monospace; font-size:8.5px; letter-spacing:2px;
+  text-transform:uppercase; color:rgba(255,62,138,.55); margin-bottom:7px;
   display:flex; align-items:center; gap:6px;
 }
-.roast-final-label::before { content:''; width:16px; height:1px; background:rgba(255,62,138,.3); }
-.roast-final-text {
-  font-family:'Syne', sans-serif; font-weight:700; font-size:13px; line-height:1.65;
+.diagnosis-label::before { content:''; width:14px; height:1px; background:rgba(255,62,138,.3); }
+.diagnosis-text {
+  font-family:'Syne', sans-serif; font-weight:700; font-size:12.5px; line-height:1.65;
   color:#1a1a2e;
 }
-.insights-loading {
-  display:flex; flex-direction:column; gap:8px; padding:4px 0;
-}
+
+/* skeleton */
+.insights-loading { display:flex; flex-direction:column; gap:8px; }
 .insights-skel {
-  height:60px; border-radius:14px;
+  border-radius:14px;
   background:linear-gradient(90deg,rgba(88,62,255,.05) 25%,rgba(88,62,255,.1) 50%,rgba(88,62,255,.05) 75%);
   background-size:200% 100%; animation:skelShimmer 1.4s infinite;
 }
-@keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-.insights-actions {
-  display:flex; gap:8px; margin-top:4px; animation:insightIn .4s .3s ease both;
-}
-.insights-btn {
-  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
-  border-radius:100px; padding:9px 14px; font-family:'Syne',sans-serif;
-  font-size:11px; font-weight:700; letter-spacing:.3px; cursor:pointer;
-  border:none; transition:all .2s;
-}
-.insights-btn-outline {
-  background:transparent; border:1px solid rgba(88,62,255,.2); color:#583EFF;
-}
-.insights-btn-outline:hover { background:rgba(88,62,255,.06); }
-.insights-btn-solid {
-  background:linear-gradient(135deg,#583EFF,#7B5FFF); color:#fff;
-}
-.insights-btn-solid:hover { opacity:.88; }
 
 /* ── City autocomplete ── */
 .city-ac-wrap { position:relative; flex:1; }
@@ -1153,9 +1151,9 @@ async function buildGenrePanel() {
 
   // Show skeletons
   el.innerHTML = `<div class="insights-loading">
-    <div class="insights-skel"></div>
-    <div class="insights-skel" style="opacity:.7"></div>
-    <div class="insights-skel" style="opacity:.5"></div>
+    <div class="insights-skel" style="height:140px"></div>
+    <div class="insights-skel" style="height:52px;opacity:.7"></div>
+    <div class="insights-skel" style="height:80px;opacity:.5"></div>
   </div>`;
 
   const stats = insightsComputeLocal(insightsArtists);
@@ -1254,44 +1252,51 @@ async function buildGenrePanel() {
   const shareLabel = isEs ? 'Compartir' : 'Share';
   const regenLabel = isEs ? 'Otro roast' : 'Roast again';
 
+  const diagLabel  = isEs ? 'Diagnóstico final' : isPt ? 'Diagnóstico final' : 'Final Diagnosis';
+  const msLabel1   = isEs ? 'Artistas'   : 'Artists';
+  const msLabel2   = isEs ? 'Géneros'    : 'Genres';
+  const msLabel3   = isEs ? 'Mainstream' : 'Mainstream';
+  const msLabel4   = isEs ? 'Caos'       : 'Chaos';
+
   el.innerHTML = `
     <div class="insights-wrap">
-      ${insights.map((ins, i) => `
-        <div class="insight-item" style="animation-delay:${i*0.07}s">
-          <div class="insight-icon">${ins.icon}</div>
-          <div class="insight-body">
+      <div class="insights-grid">
+        ${insights.map(ins => `
+          <div class="insight-cell">
+            <div class="insight-icon">${ins.icon}</div>
             <div class="insight-label">${ins.label}</div>
             <div class="insight-value">${ins.value}</div>
             ${ins.sub ? '<div class="insight-sub">'+ins.sub+'</div>' : ''}
-          </div>
-          ${ins.badge ? '<span class="insight-badge '+ins.badge.cls+'">'+ins.badge.text+'</span>' : ''}
-        </div>`).join('')}
-
-      <div class="roast-final">
-        <div class="roast-final-label">${roastLabel2}</div>
-        <div class="roast-final-text">${roastText}</div>
+          </div>`).join('')}
       </div>
 
-      <div class="insights-actions">
-        <button class="insights-btn insights-btn-outline" onclick="buildGenrePanel()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
-          ${regenLabel}
-        </button>
-        <button class="insights-btn insights-btn-solid" onclick="shareInsights()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          ${shareLabel}
-        </button>
+      <div class="micro-stats">
+        <div class="micro-stat">
+          <div class="micro-val">${insightsArtists.length}</div>
+          <div class="micro-key">${msLabel1}</div>
+        </div>
+        <div class="micro-stat">
+          <div class="micro-val">${stats.uniqueGenres}</div>
+          <div class="micro-key">${msLabel2}</div>
+        </div>
+        <div class="micro-stat">
+          <div class="micro-val">${Math.round((stats.mainstreamCount / Math.max(insightsArtists.length,1))*100)}%</div>
+          <div class="micro-key">${msLabel3}</div>
+        </div>
+        <div class="micro-stat">
+          <div class="micro-val">${stats.chaosScore}%</div>
+          <div class="micro-key">${msLabel4}</div>
+        </div>
+      </div>
+
+      <div class="diagnosis-block">
+        <div class="diagnosis-label">${diagLabel}</div>
+        <div class="diagnosis-text">${roastText}</div>
       </div>
     </div>`;
 }
 
-function shareInsights() {
-  if (navigator.share) {
-    navigator.share({ title: 'Mi perfil musical en LineApp', url: 'https://lineapp.club' });
-  } else {
-    navigator.clipboard?.writeText('lineapp.club');
-  }
-}
+
 
 async function fetchConcerts(city) {
   if (!city) return;
