@@ -344,7 +344,7 @@ body::before {
   transition:all .2s;
 }
 .city-locate-btn:hover { background:rgba(88,62,255,.15); color:var(--purple); }
-.city-locate-btn.loading svg { animation:rspin 1s linear infinite; }
+.city-locate-btn.loading { opacity:0.5; }
 .ac-list {
   position:absolute; top:calc(100% + 4px); left:0; right:0;
   background:#fff; border-radius:12px; list-style:none;
@@ -412,7 +412,9 @@ body::before {
 @media (max-width:480px) {
   .topbar-logo svg { height:24px; }
   .chip-name { display:none; }
-  .btn-logout { padding:6px 12px; font-size:11px; }
+  .btn-logout { padding:6px 14px; font-size:11px; gap:5px; }
+  .topbar { padding:0 16px; }
+  .topbar-right { gap:8px; }
 }
 </style>
 </head>
@@ -475,7 +477,10 @@ body::before {
         <img id="uAvatar" src="" alt="">
         <span class="chip-name" id="uName">...</span>
       </div>
-      <button class="btn-logout" onclick="logout()">↩ Salir</button>
+      <button class="btn-logout" onclick="logout()">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  Salir
+</button>
     </div>
   </div>
 
