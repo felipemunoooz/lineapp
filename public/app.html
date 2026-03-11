@@ -600,13 +600,20 @@ const DATES = [
 ];
 
 let bgImage = null;
+let bgConfig = { src: '/BG_1.png', textColor: '#FFF8E7', pillBg: '#FFF8E7', pillText: '#111111', watermarkAlpha: 0.28 };
+
+const BG_CONFIGS = [
+  { src: '/BG_1.png',  textColor: '#FFF8E7', pillBg: '#FFF8E7', pillText: '#111111', watermarkAlpha: 0.28 },
+  { src: '/BG2.png',   textColor: '#30373A', pillBg: '#30373A', pillText: '#FFF8E7', watermarkAlpha: 0.45 },
+];
 
 function loadBgImage() {
+  bgConfig = BG_CONFIGS[Math.floor(Math.random() * BG_CONFIGS.length)];
   return new Promise(resolve => {
     const img = new Image();
     img.onload  = () => { bgImage = img; resolve(); };
     img.onerror = () => resolve();
-    img.src = '/BG_1.png';
+    img.src = bgConfig.src;
   });
 }
 
@@ -671,7 +678,7 @@ function drawFlyer(artists, userName) {
 
   if (!artists.length) return;
 
-  const CREAM   = '#FFF8E7';
+  const CREAM   = bgConfig.textColor;
   const cx      = CW / 2;
   const pad     = CW * 0.055;
   const maxW    = CW - pad * 2;
@@ -714,8 +721,8 @@ function drawFlyer(artists, userName) {
 
   ctx.beginPath();
   ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
-  ctx.fillStyle = CREAM; ctx.fill();
-  ctx.fillStyle    = '#111';
+  ctx.fillStyle = bgConfig.pillBg; ctx.fill();
+  ctx.fillStyle = bgConfig.pillText;
   ctx.textBaseline = 'middle';
   ctx.fillText(pillText, cx, pillY + pillH / 2);
   ctx.textBaseline = 'top';
@@ -801,7 +808,7 @@ function drawFlyer(artists, userName) {
   ctx.textAlign    = 'right';
   ctx.textBaseline = 'bottom';
   ctx.font         = `400 10px ${FONT}`;
-  ctx.fillStyle    = 'rgba(255,248,231,.28)';
+  ctx.fillStyle    = `rgba(${bgConfig.textColor === '#30373A' ? '48,55,58' : '255,248,231'},${bgConfig.watermarkAlpha})`;
   ctx.fillText(`♪ ${userName} · lineapp.club`, CW - 12, CH - 10);
 }
 
