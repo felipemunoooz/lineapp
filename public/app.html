@@ -356,50 +356,61 @@ body::before {
   text-transform:uppercase; color:rgba(88,62,255,.4);
 }
 .insight-value {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:13px;
-  color:#1a1a2e; line-height:1.2;
+  font-family:'Syne', sans-serif; font-weight:700; font-size:13.5px;
+  color:#1a1a2e; line-height:1.25;
 }
 .insight-sub {
-  font-family:'DM Mono', monospace; font-size:9.5px;
-  color:rgba(26,26,46,.38); line-height:1.45;
+  font-family:'DM Mono', monospace; font-size:9px;
+  color:rgba(26,26,46,.35); line-height:1.5;
 }
 
-/* micro stats row */
+/* chaos bar */
+.chaos-bar-wrap {
+  margin-top:5px; height:3px; border-radius:100px;
+  background:rgba(88,62,255,.1); overflow:hidden;
+}
+.chaos-bar-fill {
+  height:100%; border-radius:100px;
+  background:linear-gradient(90deg,#583EFF,#FF3E8A);
+  transition:width .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* micro stats chips */
 .micro-stats {
-  display:flex; border-radius:12px; overflow:hidden;
-  background:rgba(88,62,255,.04); border:1px solid rgba(88,62,255,.07);
+  display:flex; flex-wrap:wrap; gap:6px;
   animation:insightIn .3s .1s ease both;
 }
-.micro-stat {
-  flex:1; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; padding:10px 6px; gap:2px;
-  border-right:1px solid rgba(88,62,255,.07);
+.micro-chip {
+  display:flex; align-items:baseline; gap:5px;
+  background:rgba(88,62,255,.05); border:1px solid rgba(88,62,255,.1);
+  border-radius:100px; padding:5px 12px;
 }
-.micro-stat:last-child { border-right:none; }
 .micro-val {
-  font-family:'Syne', sans-serif; font-weight:800; font-size:14px; color:#583EFF;
+  font-family:'Syne', sans-serif; font-weight:800; font-size:13px; color:#583EFF;
 }
 .micro-key {
-  font-family:'DM Mono', monospace; font-size:8px; letter-spacing:1px;
-  text-transform:uppercase; color:rgba(26,26,46,.35); text-align:center;
+  font-family:'DM Mono', monospace; font-size:8.5px; letter-spacing:.8px;
+  text-transform:uppercase; color:rgba(26,26,46,.4);
 }
 
 /* diagnosis */
 .diagnosis-block {
   background:linear-gradient(135deg,rgba(88,62,255,.07),rgba(255,62,138,.05));
-  border:1px solid rgba(88,62,255,.1); border-radius:14px; padding:14px 16px;
+  border:1px solid rgba(88,62,255,.1); border-radius:14px; padding:16px 18px;
   animation:insightIn .3s .2s ease both;
 }
 .diagnosis-label {
   font-family:'DM Mono', monospace; font-size:8.5px; letter-spacing:2px;
-  text-transform:uppercase; color:rgba(255,62,138,.55); margin-bottom:7px;
+  text-transform:uppercase; color:rgba(255,62,138,.55); margin-bottom:9px;
   display:flex; align-items:center; gap:6px;
 }
 .diagnosis-label::before { content:''; width:14px; height:1px; background:rgba(255,62,138,.3); }
 .diagnosis-text {
-  font-family:'Syne', sans-serif; font-weight:700; font-size:12.5px; line-height:1.65;
+  font-family:'Syne', sans-serif; font-weight:700; font-size:14px; line-height:1.7;
   color:#1a1a2e;
 }
+.diagnosis-text::before { content:'"'; opacity:.35; margin-right:1px; }
+.diagnosis-text::after  { content:'"'; opacity:.35; margin-left:1px; }
 
 /* skeleton */
 .insights-loading { display:flex; flex-direction:column; gap:8px; }
@@ -1181,6 +1192,7 @@ async function buildGenrePanel() {
     {
       icon: '🌀', label: 'Índice de caos',
       value: chaosLabel,
+      bar: stats.chaosScore,
       sub: `${stats.uniqueGenres} géneros conviviendo sin supervisión`,
       badge: { text: `${stats.chaosScore}%`, cls: chaosBadge }
     },
@@ -1206,6 +1218,7 @@ async function buildGenrePanel() {
     {
       icon: '🌀', label: 'Chaos Index',
       value: chaosLabel,
+      bar: stats.chaosScore,
       sub: `${stats.uniqueGenres} genres coexisting without supervision`,
       badge: { text: `${stats.chaosScore}%`, cls: chaosBadge }
     },
@@ -1266,27 +1279,16 @@ async function buildGenrePanel() {
             <div class="insight-icon">${ins.icon}</div>
             <div class="insight-label">${ins.label}</div>
             <div class="insight-value">${ins.value}</div>
+            ${ins.bar !== undefined ? `<div class="chaos-bar-wrap"><div class="chaos-bar-fill" style="width:0%" data-w="${ins.bar}%"></div></div>` : ''}
             ${ins.sub ? '<div class="insight-sub">'+ins.sub+'</div>' : ''}
           </div>`).join('')}
       </div>
 
       <div class="micro-stats">
-        <div class="micro-stat">
-          <div class="micro-val">${insightsArtists.length}</div>
-          <div class="micro-key">${msLabel1}</div>
-        </div>
-        <div class="micro-stat">
-          <div class="micro-val">${stats.uniqueGenres}</div>
-          <div class="micro-key">${msLabel2}</div>
-        </div>
-        <div class="micro-stat">
-          <div class="micro-val">${Math.round((stats.mainstreamCount / Math.max(insightsArtists.length,1))*100)}%</div>
-          <div class="micro-key">${msLabel3}</div>
-        </div>
-        <div class="micro-stat">
-          <div class="micro-val">${stats.chaosScore}%</div>
-          <div class="micro-key">${msLabel4}</div>
-        </div>
+        <div class="micro-chip"><span class="micro-val">${insightsArtists.length}</span><span class="micro-key">${msLabel1}</span></div>
+        <div class="micro-chip"><span class="micro-val">${stats.uniqueGenres}</span><span class="micro-key">${msLabel2}</span></div>
+        <div class="micro-chip"><span class="micro-val">${Math.round((stats.mainstreamCount / Math.max(insightsArtists.length,1))*100)}%</span><span class="micro-key">${msLabel3}</span></div>
+        <div class="micro-chip"><span class="micro-val">${stats.chaosScore}%</span><span class="micro-key">${msLabel4}</span></div>
       </div>
 
       <div class="diagnosis-block">
@@ -1294,6 +1296,12 @@ async function buildGenrePanel() {
         <div class="diagnosis-text">${roastText}</div>
       </div>
     </div>`;
+  // Animate chaos bar
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.chaos-bar-fill').forEach(b => {
+      setTimeout(() => { b.style.width = b.dataset.w; }, 100);
+    });
+  });
 }
 
 
