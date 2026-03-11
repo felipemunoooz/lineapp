@@ -723,34 +723,26 @@ function drawFlyer(artists, userName) {
   );
 
   // Non-headliners: all same fixed size in Barlow Condensed
-  // Find the size that fits the longest tier-2 line across both days
-  const getNonHead = (day) => day.slice(1).map(a => a.name.toUpperCase());
-  const allNonHead = [...getNonHead(day1), ...getNonHead(day2)];
-  // Tier 2: artists 1-3 per day (3 on one line)
   const t2d1 = day1.slice(1,4).map(a=>a.name.toUpperCase()).join(' - ');
   const t2d2 = day2.slice(1,4).map(a=>a.name.toUpperCase()).join(' - ');
-  // Pick a fixed legible size: fit to the longest tier-2 line, max 38px min 26px
   const nonHeadSize = Math.min(
-    t2d1 ? fit(t2d1, maxW, 62, `700 ?px ${FONT}`) : 62,
-    t2d2 ? fit(t2d2, maxW, 62, `700 ?px ${FONT}`) : 62
+    t2d1 ? fit(t2d1, maxW, 54, `700 ?px ${FONT}`) : 54,
+    t2d2 ? fit(t2d2, maxW, 54, `700 ?px ${FONT}`) : 54
   );
 
-  // T3 lines: artists 4+ split into pairs
   const getT3Lines = (day) => {
     const names = day.slice(4, 9).map(a => a.name.toUpperCase());
     if (!names.length) return [];
     const mid = Math.ceil(names.length / 2);
     return names.length > 2 ? [names.slice(0, mid), names.slice(mid)] : [names];
   };
-  const t3lines1 = getT3Lines(day1);
-  const t3lines2 = getT3Lines(day2);
+  const secLines1 = getT3Lines(day1);
+  const secLines2 = getT3Lines(day2);
 
-  // Day block height
   const dayHeight = (t3lines) => {
-    let h = headSize + 8;              // headliner
-    h += nonHeadSize + GAP;            // tier 2 (1 line)
-    h += nonHeadSize * t3lines.length; // tier 3 lines
-    if (t3lines.length > 0) h += GAP * t3lines.length;
+    let h = headSize + 8;
+    h += nonHeadSize + GAP;
+    h += nonHeadSize * t3lines.length + GAP * t3lines.length;
     return h;
   };
 
@@ -758,13 +750,11 @@ function drawFlyer(artists, userName) {
     let y = startY;
     ctx.shadowColor = 'rgba(0,0,0,.65)';
 
-    // Headliner — Aalto Display
     ctx.font = `${headSize}px AaltoDisplay, Anton, sans-serif`;
     ctx.fillStyle = CREAM; ctx.shadowBlur = 12;
     ctx.fillText(dayArtists[0]?.name.toUpperCase() || '', cx, y);
     y += headSize + 8;
 
-    // Tier 2 — Barlow Condensed 700
     const t2names = dayArtists.slice(1,4).map(a => a.name.toUpperCase());
     if (t2names.length) {
       ctx.font = `700 ${nonHeadSize}px ${FONT}`;
@@ -773,10 +763,9 @@ function drawFlyer(artists, userName) {
       y += nonHeadSize + GAP;
     }
 
-    // Tier 3 — Barlow Condensed 600, same size as tier 2
     if (t3lines.length) {
       ctx.font = `600 ${nonHeadSize}px ${FONT}`;
-      ctx.fillStyle = 'rgba(255,248,231,.8)'; ctx.shadowBlur = 4;
+      ctx.fillStyle = 'rgba(255,248,231,.82)'; ctx.shadowBlur = 4;
       t3lines.forEach(line => {
         ctx.fillText(line.join(' - '), cx, y);
         y += nonHeadSize + GAP;
@@ -790,11 +779,11 @@ function drawFlyer(artists, userName) {
   // Center lineup vertically between pill and raccoon
   const areaTop    = pillY + pillH + CH * 0.13;
   const areaBottom = CH * 0.63;
-  const totalH     = dayHeight(t3lines1) + DAY_GAP + dayHeight(t3lines2);
+  const totalH     = dayHeight(secLines1) + DAY_GAP + dayHeight(secLines2);
   const lineupY    = areaTop + (areaBottom - areaTop - totalH) / 2;
 
-  const day1End = drawDay(day1, t3lines1, lineupY);
-  drawDay(day2, t3lines2, day1End + DAY_GAP);
+  const day1End = drawDay(day1, secLines1, lineupY);
+  drawDay(day2, secLines2, day1End + DAY_GAP);
 
   // ── Watermark ────────────────────────────
   ctx.textAlign    = 'right';
