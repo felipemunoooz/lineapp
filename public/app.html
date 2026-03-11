@@ -338,7 +338,7 @@ body::before {
 @keyframes insightIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 @keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-.insights-wrap { display:flex; flex-direction:column; gap:10px; }
+.insights-wrap { display:flex; flex-direction:column; gap:10px; height:100%; }
 
 /* 2×2 grid */
 .insights-grid {
@@ -348,7 +348,7 @@ body::before {
 .insights-grid.two-col { grid-template-columns:1fr 1fr; }
 .insight-cell {
   background:#f6f5ff; border-radius:14px;
-  padding:14px 14px 12px; display:flex; flex-direction:column; gap:3px;
+  padding:16px; display:flex; flex-direction:column; gap:4px;
 }
 .insight-icon {
   width:34px; height:34px; margin-bottom:6px;
@@ -365,8 +365,8 @@ body::before {
   color:#1a1a2e; line-height:1.35; margin-top:2px;
 }
 .insight-sub {
-  font-family:'Syne', sans-serif; font-size:11px; font-weight:400;
-  color:rgba(26,26,46,.45); line-height:1.45; margin-top:2px;
+  font-family:'Syne', sans-serif; font-size:13px; font-weight:400;
+  color:rgba(26,26,46,.5); line-height:1.4; margin-top:3px;
 }
 
 /* micro stats — horizontal row */
@@ -377,7 +377,7 @@ body::before {
 }
 .micro-chip {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:10px 4px; gap:2px;
+  padding:12px 4px; gap:3px;
   border-right:1px solid rgba(88,62,255,.08);
 }
 .micro-chip:last-child { border-right:none; }
@@ -390,18 +390,7 @@ body::before {
   letter-spacing:.4px; text-transform:uppercase; color:rgba(26,26,46,.4);
 }
 
-/* diagnosis */
-.diagnosis-block {
-  background:#f0eeff;
-  border-radius:14px 14px 14px 4px; padding:14px 16px;
-  animation:insightIn .3s .16s ease both;
-  position:relative;
-}
-.diagnosis-label { display:none; }
-.diagnosis-text {
-  font-family:'Syne', sans-serif; font-weight:700; font-size:14px; line-height:1.65;
-  color:#1a1a2e;
-}
+
 
 /* skeleton */
 .insights-loading { display:flex; flex-direction:column; gap:8px; }
@@ -1236,7 +1225,6 @@ async function buildGenrePanel() {
   const shareLabel = isEs ? 'Compartir' : 'Share';
   const regenLabel = isEs ? 'Otro roast' : 'Roast again';
 
-  const diagLabel  = isEs ? 'Diagnóstico final' : isPt ? 'Diagnóstico final' : 'Final Diagnosis';
   const msLabel1   = isEs ? 'Artistas'   : 'Artists';
   const msLabel2   = isEs ? 'Géneros'    : 'Genres';
   const msLabel3   = isEs ? 'Mainstream' : 'Mainstream';
@@ -1259,10 +1247,6 @@ async function buildGenrePanel() {
         <div class="micro-chip"><span class="micro-val">${stats.uniqueGenres}</span><span class="micro-key">${msLabel2}</span></div>
         <div class="micro-chip"><span class="micro-val">${Math.round((stats.mainstreamCount / Math.max(insightsArtists.length,1))*100)}%</span><span class="micro-key">${msLabel3}</span></div>
         <div class="micro-chip"><span class="micro-val">${stats.chaosScore}%</span><span class="micro-key">${msLabel4}</span></div>
-      </div>
-
-      <div class="diagnosis-block">
-        <div class="diagnosis-text">${roastText}</div>
       </div>
     </div>`;
 
