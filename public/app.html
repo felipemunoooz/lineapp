@@ -1002,7 +1002,8 @@ async function loadUser() {
     const r = await fetch(`/api/me?token=${token}`);
     const d = await r.json();
     userName = d.display_name || 'Tú';
-    document.getElementById('uName').textContent = userName;
+    const firstName = userName.split(' ')[0];
+    document.getElementById('uName').textContent = firstName;
     document.getElementById('uAvatar').src = d.images?.[0]?.url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=333&color=fff`;
   } catch {}
