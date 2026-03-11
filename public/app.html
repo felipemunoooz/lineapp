@@ -334,9 +334,28 @@ body::before {
 }
 
 /* ── Roast card ── */
-.roast-text {
-  font-family:'Syne', sans-serif; font-size:13px; line-height:1.75;
-  color:#1a1a2e; padding:4px 0;
+.roast-chat {
+  display:flex; flex-direction:column; gap:10px; padding:4px 0;
+}
+.roast-avatar {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#583EFF,#FF3E8A);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px;
+}
+.roast-bubble-wrap {
+  display:flex; align-items:flex-end; gap:8px;
+}
+.roast-bubble {
+  background:rgba(88,62,255,.08); border-radius:18px 18px 18px 4px;
+  padding:12px 16px; max-width:calc(100% - 40px);
+  font-family:'Syne', sans-serif; font-size:13px; line-height:1.7;
+  color:#1a1a2e;
+}
+.roast-sender {
+  font-family:'DM Mono', monospace; font-size:9px; letter-spacing:1px;
+  color:rgba(88,62,255,.4); margin-left:36px; margin-top:2px;
+  text-transform:uppercase;
 }
 .roast-loading {
   display:flex; align-items:center; gap:10px;
@@ -348,6 +367,17 @@ body::before {
   border:2px solid rgba(88,62,255,.15); border-top-color:rgba(88,62,255,.5);
   animation:rspin 1s linear infinite; flex-shrink:0;
 }
+.roast-typing {
+  display:flex; align-items:center; gap:4px; padding:4px 2px;
+}
+.roast-typing span {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(88,62,255,.35);
+  animation:roastBounce 1.2s infinite;
+}
+.roast-typing span:nth-child(2) { animation-delay:.2s; }
+.roast-typing span:nth-child(3) { animation-delay:.4s; }
+@keyframes roastBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
 
 /* ── City autocomplete ── */
 .city-ac-wrap { position:relative; flex:1; }
@@ -1050,16 +1080,32 @@ async function buildGenrePanel() {
   const el = document.getElementById('genreDiv');
   const labelEl = document.getElementById('roastLabel');
 
-  // Detect language
   const lang = navigator.language || 'es';
   const isEs = lang.startsWith('es');
   const isPt = lang.startsWith('pt');
   const langName = isEs ? 'Spanish' : isPt ? 'Portuguese' : 'English';
 
   labelEl.textContent = isEs ? 'Tu roast musical 🔥' : isPt ? 'Seu roast musical 🔥' : 'Your music roast 🔥';
-  el.innerHTML = `<div class="roast-loading">${isEs ? 'Analizando tu gusto musical...' : isPt ? 'Analisando seu gosto musical...' : 'Analyzing your music taste...'}</div>`;
+
+  // Show typing indicator
+  el.innerHTML = `
+    <div class="roast-chat">
+      <div class="roast-bubble-wrap">
+        <div class="roast-avatar">🎵</div>
+        <div class="roast-bubble">
+          <div class="roast-typing"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>`;
 
   const topArtists = artists.slice(0, 12).map(a => a.name);
+  const senderName = isEs ? 'LineApp AI' : isPt ? 'LineApp AI' : 'LineApp AI';
+
+  const prompt = `You are a savage but funny music critic roasting someone's Spotify taste. 
+Be specific — mention actual artist names from their list and roast the weird combinations.
+Write 2-3 short punchy sentences. Conversational tone, like texting a friend.
+Write in ${langName}. No hashtags. No emojis. Don't be mean, just funny.
+Their top artists: ${topArtists.join(', ')}.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1068,21 +1114,29 @@ async function buildGenrePanel() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: `You are a witty music critic who roasts people's music taste in a fun, playful, non-offensive way. 
-Write a short roast (2-3 sentences max) about someone who listens to these artists: ${topArtists.join(', ')}.
-Be funny and specific about the contrast or weirdness of their taste. 
-Write in ${langName}. No hashtags. No emojis. Just witty text. Don't start with "Oh" or "Wow".`
-        }]
+        messages: [{ role: 'user', content: prompt }]
       })
     });
     const data = await res.json();
     const roast = data.content?.[0]?.text || '';
-    el.innerHTML = `<div class="roast-text">"${roast}"</div>`;
+    el.innerHTML = `
+      <div class="roast-chat">
+        <div class="roast-bubble-wrap">
+          <div class="roast-avatar">🎵</div>
+          <div class="roast-bubble">${roast}</div>
+        </div>
+        <div class="roast-sender">${senderName}</div>
+      </div>`;
   } catch(e) {
-    const fallback = isEs ? 'Tu gusto musical es... único. Digámoslo así.' : isPt ? 'Seu gosto musical é único. Vamos deixar assim.' : 'Your music taste is truly one of a kind.';
-    el.innerHTML = '<div class="roast-text">' + fallback + '</div>';
+    const fallback = isEs ? 'Tu gusto musical es... complicado de explicar.' : 'Your music taste defies all genre classification.';
+    el.innerHTML = `
+      <div class="roast-chat">
+        <div class="roast-bubble-wrap">
+          <div class="roast-avatar">🎵</div>
+          <div class="roast-bubble">${fallback}</div>
+        </div>
+        <div class="roast-sender">${senderName}</div>
+      </div>`;
   }
 }
 
