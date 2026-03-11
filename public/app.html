@@ -338,14 +338,13 @@ body::before {
 @keyframes insightIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 @keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-.insights-wrap { display:flex; flex-direction:column; gap:10px; height:100%; }
+.insights-wrap { display:flex; flex-direction:column; gap:12px; }
 
 /* 2×2 grid */
 .insights-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
   animation:insightIn .3s ease both;
 }
-.insights-grid.two-col { grid-template-columns:1fr 1fr; }
 .insight-cell {
   background:#f6f5ff; border-radius:14px;
   padding:16px; display:flex; flex-direction:column; gap:4px;
@@ -374,6 +373,7 @@ body::before {
   display:grid; grid-template-columns:repeat(4,1fr); gap:0;
   background:#f6f5ff; border-radius:12px; overflow:hidden;
   animation:insightIn .3s .08s ease both;
+  border:1px solid rgba(88,62,255,.07);
 }
 .micro-chip {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
