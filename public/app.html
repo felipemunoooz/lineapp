@@ -243,8 +243,12 @@ body::before {
 
 /* ── Tabs ── */
 
-.insights-card { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-.concert-card  { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.insights-card { flex:1; display:flex; flex-direction:column; min-height:0; }
+.concert-card  { flex:1; display:flex; flex-direction:column; min-height:0; }
+.time-pills {
+  display:flex; gap:4px; background:#fff;
+  border-radius:100px; padding:4px; flex-shrink:0; height:48px;
+}
 .tpill {
   flex:1; display:flex; align-items:center; justify-content:center;
   border-radius:100px; border:none; background:none;
@@ -260,7 +264,7 @@ body::before {
   border-radius:14px; padding:22px;
 }
 .card-fill {
-  flex:1; display:flex; flex-direction:column; min-height:0;
+  flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden;
 }
 .card-fill .city-row,
 .card-fill #concertDiv { flex-shrink:0; }
