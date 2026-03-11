@@ -333,51 +333,68 @@ body::before {
   font-family:'DM Mono',monospace; letter-spacing:.5px;
 }
 
-/* ── Roast card ── */
-.roast-chat {
-  display:flex; flex-direction:column; gap:10px; padding:4px 0;
+/* ── Roast chat card ── */
+.roast-card-inner {
+  display:flex; flex-direction:column; height:100%; min-height:280px;
+}
+.roast-messages {
+  flex:1; overflow-y:auto; display:flex; flex-direction:column;
+  gap:10px; padding:4px 0 8px; scroll-behavior:smooth;
 }
 .roast-avatar {
   width:28px; height:28px; border-radius:50%; flex-shrink:0;
   background:linear-gradient(135deg,#583EFF,#FF3E8A);
   display:flex; align-items:center; justify-content:center;
-  font-size:14px;
+  font-size:13px;
 }
 .roast-bubble-wrap {
   display:flex; align-items:flex-end; gap:8px;
 }
+.roast-bubble-wrap.user { flex-direction:row-reverse; }
 .roast-bubble {
   background:rgba(88,62,255,.08); border-radius:18px 18px 18px 4px;
-  padding:12px 16px; max-width:calc(100% - 40px);
-  font-family:'Syne', sans-serif; font-size:13px; line-height:1.7;
-  color:#1a1a2e;
+  padding:10px 14px; max-width:calc(100% - 40px);
+  font-family:'Syne', sans-serif; font-size:12.5px; line-height:1.65;
+  color:#1a1a2e; animation:bubbleIn .25s ease;
 }
-.roast-sender {
-  font-family:'DM Mono', monospace; font-size:9px; letter-spacing:1px;
-  color:rgba(88,62,255,.4); margin-left:36px; margin-top:2px;
-  text-transform:uppercase;
+.roast-bubble.user {
+  background:linear-gradient(135deg,#583EFF,#7B5FFF);
+  border-radius:18px 18px 4px 18px; color:#fff;
 }
-.roast-loading {
-  display:flex; align-items:center; gap:10px;
-  font-family:'DM Mono', monospace; font-size:11px;
-  color:rgba(88,62,255,.4); letter-spacing:.5px;
-}
-.roast-loading::before {
-  content:''; width:16px; height:16px; border-radius:50%;
-  border:2px solid rgba(88,62,255,.15); border-top-color:rgba(88,62,255,.5);
-  animation:rspin 1s linear infinite; flex-shrink:0;
-}
+@keyframes bubbleIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.roast-typing-wrap { display:flex; align-items:flex-end; gap:8px; }
 .roast-typing {
-  display:flex; align-items:center; gap:4px; padding:4px 2px;
+  display:flex; align-items:center; gap:4px;
+  background:rgba(88,62,255,.08); border-radius:18px 18px 18px 4px;
+  padding:12px 16px;
 }
 .roast-typing span {
   width:6px; height:6px; border-radius:50%;
-  background:rgba(88,62,255,.35);
-  animation:roastBounce 1.2s infinite;
+  background:rgba(88,62,255,.4); animation:roastBounce 1.2s infinite;
 }
 .roast-typing span:nth-child(2) { animation-delay:.2s; }
 .roast-typing span:nth-child(3) { animation-delay:.4s; }
-@keyframes roastBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+@keyframes roastBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+.roast-input-row {
+  display:flex; gap:8px; align-items:center;
+  border-top:1px solid rgba(88,62,255,.08); padding-top:10px; margin-top:4px;
+}
+.roast-input {
+  flex:1; background:rgba(88,62,255,.05); border:1px solid rgba(88,62,255,.1);
+  border-radius:100px; padding:8px 14px;
+  font-family:'Syne', sans-serif; font-size:12px; color:#1a1a2e;
+  outline:none; transition:border-color .2s;
+}
+.roast-input:focus { border-color:rgba(88,62,255,.3); }
+.roast-input::placeholder { color:rgba(88,62,255,.3); }
+.roast-send {
+  width:34px; height:34px; border-radius:50%; border:none; cursor:pointer;
+  background:linear-gradient(135deg,#583EFF,#7B5FFF);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:opacity .2s;
+}
+.roast-send:disabled { opacity:.4; cursor:default; }
+.roast-send svg { color:#fff; }
 
 /* ── City autocomplete ── */
 .city-ac-wrap { position:relative; flex:1; }
@@ -445,6 +462,8 @@ body::before {
   /* CTAs and cards same width */
   .flyer-btns { width:100%; max-width:100%; }
   .right-panel { max-width:100%; width:calc(100% - 32px); overflow-y:visible; max-height:none; }
+  .card { min-height:320px; display:flex; flex-direction:column; }
+  .card-fill { flex:1; }
 
   /* Topbar */
   .topbar { padding:0 16px; height:56px; }
@@ -1076,36 +1095,62 @@ function buildAll() {
 
 
 
-async function buildGenrePanel() {
-  const el = document.getElementById('genreDiv');
-  const labelEl = document.getElementById('roastLabel');
+// ── Roast Chat ──
+let roastHistory = [];
+let roastLang = 'es';
+let roastLangName = 'Spanish';
+let roastArtists = [];
+let roastBusy = false;
 
-  const lang = navigator.language || 'es';
-  const isEs = lang.startsWith('es');
-  const isPt = lang.startsWith('pt');
-  const langName = isEs ? 'Spanish' : isPt ? 'Portuguese' : 'English';
+function roastScrollBottom() {
+  const msgs = document.getElementById('roastMessages');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
 
-  labelEl.textContent = isEs ? 'Tu roast musical 🔥' : isPt ? 'Seu roast musical 🔥' : 'Your music roast 🔥';
+function roastShowTyping() {
+  const msgs = document.getElementById('roastMessages');
+  if (!msgs) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'roast-typing-wrap'; wrap.id = 'roastTyping';
+  wrap.innerHTML = '<div class="roast-avatar">🎵</div><div class="roast-typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(wrap);
+  roastScrollBottom();
+}
 
-  // Show typing indicator
-  el.innerHTML = `
-    <div class="roast-chat">
-      <div class="roast-bubble-wrap">
-        <div class="roast-avatar">🎵</div>
-        <div class="roast-bubble">
-          <div class="roast-typing"><span></span><span></span><span></span></div>
-        </div>
-      </div>
-    </div>`;
+function roastHideTyping() {
+  const t = document.getElementById('roastTyping');
+  if (t) t.remove();
+}
 
-  const topArtists = artists.slice(0, 12).map(a => a.name);
-  const senderName = isEs ? 'LineApp AI' : isPt ? 'LineApp AI' : 'LineApp AI';
+function roastAddBubble(text, isUser) {
+  const msgs = document.getElementById('roastMessages');
+  if (!msgs) return;
+  roastHideTyping();
+  const wrap = document.createElement('div');
+  wrap.className = 'roast-bubble-wrap' + (isUser ? ' user' : '');
+  if (!isUser) wrap.innerHTML = '<div class="roast-avatar">🎵</div>';
+  const bubble = document.createElement('div');
+  bubble.className = 'roast-bubble' + (isUser ? ' user' : '');
+  bubble.textContent = text;
+  wrap.appendChild(bubble);
+  msgs.appendChild(wrap);
+  roastScrollBottom();
+}
 
-  const prompt = `You are a savage but funny music critic roasting someone's Spotify taste. 
-Be specific — mention actual artist names from their list and roast the weird combinations.
-Write 2-3 short punchy sentences. Conversational tone, like texting a friend.
-Write in ${langName}. No hashtags. No emojis. Don't be mean, just funny.
-Their top artists: ${topArtists.join(', ')}.`;
+async function roastSendMessage(userText) {
+  if (roastBusy) return;
+  roastBusy = true;
+  const sendBtn = document.getElementById('roastSendBtn');
+  const input = document.getElementById('roastInput');
+  if (sendBtn) sendBtn.disabled = true;
+
+  if (userText) {
+    roastAddBubble(userText, true);
+    roastHistory.push({ role: 'user', content: userText });
+  }
+
+  roastShowTyping();
+  await new Promise(r => setTimeout(r, 900 + Math.random()*600));
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1113,31 +1158,79 @@ Their top artists: ${topArtists.join(', ')}.`;
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 200,
-        messages: [{ role: 'user', content: prompt }]
+        max_tokens: 180,
+        system: `You are a witty, savage but fun music critic roasting someone's Spotify taste in a chat. 
+Be specific — mention actual artist names. Short punchy replies, like texting.
+Write in ${roastLangName}. No hashtags. No emojis. Max 2 sentences per reply.
+Their top artists: ${roastArtists.join(', ')}.`,
+        messages: roastHistory
       })
     });
     const data = await res.json();
-    const roast = data.content?.[0]?.text || '';
-    el.innerHTML = `
-      <div class="roast-chat">
-        <div class="roast-bubble-wrap">
-          <div class="roast-avatar">🎵</div>
-          <div class="roast-bubble">${roast}</div>
-        </div>
-        <div class="roast-sender">${senderName}</div>
-      </div>`;
+    const reply = data.content?.[0]?.text || '';
+    roastHideTyping();
+    roastAddBubble(reply, false);
+    roastHistory.push({ role: 'assistant', content: reply });
   } catch(e) {
-    const fallback = isEs ? 'Tu gusto musical es... complicado de explicar.' : 'Your music taste defies all genre classification.';
-    el.innerHTML = `
-      <div class="roast-chat">
-        <div class="roast-bubble-wrap">
-          <div class="roast-avatar">🎵</div>
-          <div class="roast-bubble">${fallback}</div>
-        </div>
-        <div class="roast-sender">${senderName}</div>
-      </div>`;
+    roastHideTyping();
+    const fallback = roastLang === 'es' ? 'Tu gusto musical me dejó sin palabras.' : 'Your music taste left me speechless.';
+    roastAddBubble(fallback, false);
+    roastHistory.push({ role: 'assistant', content: fallback });
   }
+
+  roastBusy = false;
+  if (sendBtn) sendBtn.disabled = false;
+  if (input) { input.value = ''; input.focus(); }
+}
+
+async function buildGenrePanel() {
+  const el = document.getElementById('genreDiv');
+  const labelEl = document.getElementById('roastLabel');
+
+  const lang = navigator.language || 'es';
+  roastLang = lang.startsWith('es') ? 'es' : lang.startsWith('pt') ? 'pt' : 'en';
+  roastLangName = roastLang === 'es' ? 'Spanish' : roastLang === 'pt' ? 'Portuguese' : 'English';
+  roastArtists = artists.slice(0, 12).map(a => a.name);
+  roastHistory = [];
+
+  labelEl.textContent = roastLang === 'es' ? 'Tu roast musical 🔥' : roastLang === 'pt' ? 'Seu roast musical 🔥' : 'Your music roast 🔥';
+  const placeholder = roastLang === 'es' ? 'Responde algo...' : roastLang === 'pt' ? 'Responda algo...' : 'Reply something...';
+
+  el.innerHTML = `
+    <div class="roast-card-inner">
+      <div class="roast-messages" id="roastMessages"></div>
+      <div class="roast-input-row">
+        <input class="roast-input" id="roastInput" placeholder="${placeholder}" autocomplete="off">
+        <button class="roast-send" id="roastSendBtn" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>`;
+
+  document.getElementById('roastInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !roastBusy) {
+      const val = e.target.value.trim();
+      if (val) roastSendMessage(val);
+    }
+  });
+  document.getElementById('roastInput').addEventListener('input', e => {
+    document.getElementById('roastSendBtn').disabled = !e.target.value.trim() || roastBusy;
+  });
+  document.getElementById('roastSendBtn').addEventListener('click', () => {
+    const val = document.getElementById('roastInput').value.trim();
+    if (val && !roastBusy) roastSendMessage(val);
+  });
+
+  // Initial roast — first message
+  const initPrompt = roastLang === 'es'
+    ? 'Hazme un roast sobre mi gusto musical. Sé específico con los artistas.'
+    : roastLang === 'pt' ? 'Me faça um roast sobre meu gosto musical. Seja específico com os artistas.'
+    : 'Roast my music taste. Be specific about the artists.';
+  roastHistory.push({ role: 'user', content: initPrompt });
+
+  roastShowTyping();
+  await new Promise(r => setTimeout(r, 1200));
+  await roastSendMessage(null);
 }
 
 async function fetchConcerts(city) {
