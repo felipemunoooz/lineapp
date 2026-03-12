@@ -830,11 +830,24 @@ function drawFlyer(artists, userName) {
     t2d2 ? fit(t2d2, maxW, 54, `700 ?px ${FONT}`) : 54
   );
 
+  // Build T3 lines by measuring actual text widths at nonHeadSize
   const getT3Lines = (day) => {
     const names = day.slice(4, 9).map(a => a.name.toUpperCase());
     if (!names.length) return [];
-    const mid = Math.ceil(names.length / 2);
-    return names.length > 2 ? [names.slice(0, mid), names.slice(mid)] : [names];
+    ctx.font = `600 ${nonHeadSize}px ${FONT}`;
+    const lines = [];
+    let current = [];
+    names.forEach(name => {
+      const test = [...current, name].join(' - ');
+      if (current.length > 0 && ctx.measureText(test).width > maxW) {
+        lines.push(current);
+        current = [name];
+      } else {
+        current.push(name);
+      }
+    });
+    if (current.length) lines.push(current);
+    return lines;
   };
   const secLines1 = getT3Lines(day1);
   const secLines2 = getT3Lines(day2);
