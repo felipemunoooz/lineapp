@@ -1163,6 +1163,16 @@ async function buildGenrePanel() {
   </div>`;
 
   const stats = insightsComputeLocal(insightsArtists);
+  // Ticket count calculation
+  const mainPct = stats.mainstreamCount / Math.max(insightsArtists.length, 1);
+  const baseTickets = 800;
+  const mainstreamBonus = Math.round(mainPct * 4000);
+  const genreBonus = Math.min(stats.uniqueGenres * 30, 600);
+  const chaospenalty = stats.chaosScore > 70 ? -400 : 0;
+  const totalTickets = baseTickets + mainstreamBonus + genreBonus + chaospenalty;
+  const ticketLabel = isEs
+    ? `entradas vendidas en tu ciudad`
+    : `tickets sold in your city`;
 
   // Chaos label
   const chaosLabel = stats.chaosScore > 70
@@ -1214,7 +1224,9 @@ async function buildGenrePanel() {
   let roastText = isEs ? 'Tu lineup no une generaciones, las confunde.' : 'Your lineup does not unite generations — it confuses them.';
   try {
     const langName = isEs ? 'Spanish' : isPt ? 'Portuguese' : 'English';
-    const res = await fetch('/api/roast', {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 5000); // 5s max
+    const res = await fetch('/api/roast', { signal: controller.signal,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1367,17 +1379,3 @@ init();
 </script>
 </body>
 </html>
-  // Ticket count calculation
-  const mainPct = stats.mainstreamCount / Math.max(insightsArtists.length, 1);
-  const baseTickets = 800;
-  const mainstreamBonus = Math.round(mainPct * 4000);
-  const genreBonus = Math.min(stats.uniqueGenres * 30, 600);
-  const chaospenalty = stats.chaosScore > 70 ? -400 : 0;
-  const totalTickets = baseTickets + mainstreamBonus + genreBonus + chaospenalty;
-  const ticketFmt = totalTickets >= 1000
-    ? (totalTickets / 1000).toFixed(1).replace('.', ',') + 'K'
-    : totalTickets.toString();
-  const ticketLabel = isEs
-    ? `entradas vendidas en tu ciudad`
-    : `tickets sold in your city`;
-
