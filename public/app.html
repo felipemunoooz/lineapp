@@ -1158,11 +1158,10 @@ async function buildGenrePanel() {
   const stats = insightsComputeLocal(insightsArtists);
   // Ticket count calculation
   const mainPct = stats.mainstreamCount / Math.max(insightsArtists.length, 1);
-  const baseTickets = 800;
-  const mainstreamBonus = Math.round(mainPct * 4000);
-  const genreBonus = Math.min(stats.uniqueGenres * 30, 600);
-  const chaospenalty = stats.chaosScore > 70 ? -400 : 0;
-  const totalTickets = baseTickets + mainstreamBonus + genreBonus + chaospenalty;
+  const baseTickets = 80;
+  const mainstreamBonus = Math.round(mainPct * 195000);
+  const genreBonus = Math.min(stats.uniqueGenres * 1500, 55000);
+  const totalTickets = baseTickets + mainstreamBonus + genreBonus;
   const ticketLabel = isEs
     ? `serían vendidos para este festival`
     : `tickets would be sold for this festival`;
