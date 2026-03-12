@@ -1166,14 +1166,12 @@ async function buildGenrePanel() {
     ? `serían vendidos para este festival`
     : `tickets would be sold for this festival`;
   const tierData = totalTickets <= 5000
-    ? { icon:'🔥', name:'Underground', color:'#e85d2f' }
+    ? { name:'Rango D', color:'#94a3b8' }
     : totalTickets <= 30000
-    ? { icon:'🎪', name:'Club Festival', color:'#c084fc' }
-    : totalTickets <= 80000
-    ? { icon:'🎤', name:'Main Stage', color:'#3b82f6' }
+    ? { name:'Rango C', color:'#3b82f6' }
     : totalTickets <= 150000
-    ? { icon:'⚡', name:'Big Festival', color:'#f59e0b' }
-    : { icon:'👑', name:'Glastonbury', color:'#583EFF' };
+    ? { name:'Rango B', color:'#f59e0b' }
+    : { name:'Rango A', color:'#583EFF' };
 
   // Chaos label
   const chaosLabel = stats.chaosScore > 70
@@ -1272,7 +1270,6 @@ async function buildGenrePanel() {
           <span class="ticket-label">${ticketLabel}</span>
         </div>
         <div class="ticket-tier" style="color:${tierData.color};background:${tierData.color}18">
-          <span class="ticket-tier-icon">${tierData.icon}</span>
           <span class="ticket-tier-name">${tierData.name}</span>
         </div>
       </div>
