@@ -721,7 +721,8 @@ function loadBgImage() {
 function loadCustomFont() {
   return new Promise(resolve => {
     const font = new FontFace('AaltoDisplay', 'url(/aalto-display.otf)');
-    font.load().then(f => { document.fonts.add(f); resolve(); }).catch(() => resolve());
+    const font2 = new FontFace('Recollect', 'url(/Recollect-BWGjB.otf)');
+    Promise.all([font.load(), font2.load()]).then(([f1, f2]) => { document.fonts.add(f1); document.fonts.add(f2); resolve(); }).catch(() => resolve());
   });
 }
 
