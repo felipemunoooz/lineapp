@@ -7,6 +7,13 @@
 <title>LineApp — Tu Festival</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Syne:wght@300;400;700;800&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet">
 <style>
+@font-face {
+  font-family: 'Recollect';
+  src: url('/Recollect-BWGjB.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
 body { min-height:100vh; background:#0e0e0e; color:#fff; font-family:'Syne',sans-serif; }
 
@@ -768,7 +775,8 @@ function makeFestName(firstName) {
     if (vowels.includes(n[i])) { cut = i + 1; break; }
   }
   const prefix = n.slice(0, cut);
-  return (prefix + 'FEST').toUpperCase();
+  const p = prefix.charAt(0).toUpperCase() + prefix.slice(1).toLowerCase();
+  return p + 'fest';
 }
 function drawFlyer(artists, userName) {
   const canvas = document.getElementById('flyerCanvas');
@@ -808,7 +816,7 @@ function drawFlyer(artists, userName) {
   // ── FESTIVAL NAME ─────────────────────────
   const festName  = makeFestName(userName.split(' ')[0]);
   const titleY    = CH * 0.07;  // more top padding
-  const titleSize = fit(festName, maxW, 82, `?px AaltoDisplay, Anton, sans-serif`);
+  const titleSize = fit(festName, maxW, 82, `?px Recollect, AaltoDisplay, Anton, sans-serif`);
   ctx.font        = `${titleSize}px AaltoDisplay, Anton, sans-serif`;
   ctx.fillStyle   = CREAM;
   ctx.shadowBlur = 0;
