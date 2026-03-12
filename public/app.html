@@ -378,7 +378,22 @@ body::before {
   animation:insightIn .3s .08s ease both; flex:none;
 }
 
+.ticket-icon {
+  width:36px; height:36px; border-radius:9px;
+  background:#fff; box-shadow:0 1px 4px rgba(88,62,255,.1);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
 .ticket-text { display:flex; flex-direction:column; gap:2px; }
+.ticket-tier {
+  flex-shrink:0; margin-left:auto;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 12px; border-radius:100px;
+  border:1.5px solid currentColor;
+}
+.ticket-tier-name {
+  font-family:'Syne', sans-serif; font-size:10px; font-weight:800;
+  letter-spacing:.5px; text-transform:uppercase; line-height:1; white-space:nowrap;
+}
 .ticket-number {
   font-family:'Syne', sans-serif; font-size:16px; font-weight:700;
   color:#1a1a2e; line-height:1.2; white-space:nowrap;
@@ -1258,12 +1273,15 @@ async function buildGenrePanel() {
       </div>
 
       <div class="ticket-block">
-        <div class="ticket-tier" style="color:${tierData.color};background:${tierData.color}18">
-          <span class="ticket-tier-name">${tierData.emoji} ${tierData.name}</span>
+        <div class="ticket-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4V7a2 2 0 012-2z"/></svg>
         </div>
-        <div class="ticket-text" style="margin-left:auto;text-align:right">
+        <div class="ticket-text">
           <span class="ticket-number"><span id="ticketCount">0</span> tickets</span>
           <span class="ticket-label">${ticketLabel}</span>
+        </div>
+        <div class="ticket-tier" style="color:${tierData.color};background:${tierData.color}18">
+          <span class="ticket-tier-name">${tierData.emoji} ${tierData.name}</span>
         </div>
       </div>
     </div>`;
