@@ -385,8 +385,7 @@ body::before {
 .ticket-text { display:flex; flex-direction:column; gap:2px; }
 .ticket-number {
   font-family:'Syne', sans-serif; font-size:16px; font-weight:800;
-  color:#1a1a2e; line-height:1.2;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  color:#1a1a2e; line-height:1.2; white-space:nowrap;
 }
 .ticket-label {
   font-family:'Syne', sans-serif; font-size:11px; font-weight:500;
@@ -1270,15 +1269,14 @@ async function buildGenrePanel() {
   // Animate ticket counter
   const ticketEl = el.querySelector('#ticketCount');
   if (ticketEl) {
-    const duration = 1400;
+    const duration = 2200;
     const start = performance.now();
+    const fmt = n => n.toLocaleString('de-DE'); // dot thousands: 1.234.567
     const anim = (now) => {
       const p = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       const val = Math.round(ease * totalTickets);
-      ticketEl.textContent = val >= 1000
-        ? (val/1000).toFixed(1).replace('.0','') + 'K'
-        : val.toString();
+      ticketEl.textContent = fmt(val);
       if (p < 1) requestAnimationFrame(anim);
     };
     requestAnimationFrame(anim);
