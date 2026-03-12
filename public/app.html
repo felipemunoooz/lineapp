@@ -371,26 +371,32 @@ body::before {
 }
 
 /* micro stats — horizontal row */
-.micro-stats {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:0;
-  background:#f6f5ff; border-radius:12px; overflow:hidden;
+.ticket-block {
+  background:#f6f5ff; border-radius:12px;
+  border:1.5px dashed rgba(88,62,255,.2);
+  padding:16px 18px; display:flex; align-items:center; gap:14px;
   animation:insightIn .3s .08s ease both;
-  border:1px solid rgba(88,62,255,.07);
-  flex:none;
+  position:relative; flex:none; overflow:hidden;
 }
-.micro-chip {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:14px 4px; gap:3px;
-  border-right:1px solid rgba(88,62,255,.08);
+.ticket-block::before, .ticket-block::after {
+  content:''; position:absolute; top:50%; width:14px; height:14px;
+  background:var(--bg); border-radius:50%; transform:translateY(-50%);
 }
-.micro-chip:last-child { border-right:none; }
-.micro-val {
-  font-family:'Syne', sans-serif; font-weight:700; font-size:16px; color:#583EFF;
-  line-height:1;
+.ticket-block::before { left:-8px; }
+.ticket-block::after  { right:-8px; }
+.ticket-icon {
+  width:40px; height:40px; border-radius:10px;
+  background:#fff; box-shadow:0 1px 4px rgba(88,62,255,.12);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
-.micro-key {
-  font-family:'Syne', sans-serif; font-size:9px; font-weight:600;
-  letter-spacing:.4px; text-transform:uppercase; color:rgba(26,26,46,.4);
+.ticket-text { display:flex; flex-direction:column; gap:3px; }
+.ticket-number {
+  font-family:'Syne', sans-serif; font-size:22px; font-weight:800;
+  color:#583EFF; line-height:1; letter-spacing:-0.5px;
+}
+.ticket-label {
+  font-family:'Syne', sans-serif; font-size:12px; font-weight:500;
+  color:rgba(26,26,46,.5); line-height:1.35;
 }
 
 
@@ -578,7 +584,7 @@ body::before {
         </button>
         <button class="flyer-btn flyer-btn-solid" onclick="downloadFlyer()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download PNG
+          Download
         </button>
       </div>
     </div>
@@ -1244,13 +1250,33 @@ async function buildGenrePanel() {
           </div>`).join('')}
       </div>
 
-      <div class="micro-stats">
-        <div class="micro-chip"><span class="micro-val">${insightsArtists.length}</span><span class="micro-key">${msLabel1}</span></div>
-        <div class="micro-chip"><span class="micro-val">${stats.uniqueGenres}</span><span class="micro-key">${msLabel2}</span></div>
-        <div class="micro-chip"><span class="micro-val">${Math.round((stats.mainstreamCount / Math.max(insightsArtists.length,1))*100)}%</span><span class="micro-key">${msLabel3}</span></div>
-        <div class="micro-chip"><span class="micro-val">${stats.chaosScore}%</span><span class="micro-key">${msLabel4}</span></div>
+      <div class="ticket-block">
+        <div class="ticket-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#583EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 010-6h20a3 3 0 010 6M2 9v10a1 1 0 001 1h18a1 1 0 001-1V9M9 21V9"/></svg>
+        </div>
+        <div class="ticket-text">
+          <span class="ticket-number" id="ticketCount">0</span>
+          <span class="ticket-label">${ticketLabel}</span>
+        </div>
       </div>
     </div>`;
+
+  // Animate ticket counter
+  const ticketEl = el.querySelector('#ticketCount');
+  if (ticketEl) {
+    const duration = 1400;
+    const start = performance.now();
+    const anim = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const val = Math.round(ease * totalTickets);
+      ticketEl.textContent = val >= 1000
+        ? (val/1000).toFixed(1).replace('.0','') + 'K'
+        : val.toString();
+      if (p < 1) requestAnimationFrame(anim);
+    };
+    requestAnimationFrame(anim);
+  }
 
 }
 
@@ -1341,3 +1367,17 @@ init();
 </script>
 </body>
 </html>
+  // Ticket count calculation
+  const mainPct = stats.mainstreamCount / Math.max(insightsArtists.length, 1);
+  const baseTickets = 800;
+  const mainstreamBonus = Math.round(mainPct * 4000);
+  const genreBonus = Math.min(stats.uniqueGenres * 30, 600);
+  const chaospenalty = stats.chaosScore > 70 ? -400 : 0;
+  const totalTickets = baseTickets + mainstreamBonus + genreBonus + chaospenalty;
+  const ticketFmt = totalTickets >= 1000
+    ? (totalTickets / 1000).toFixed(1).replace('.', ',') + 'K'
+    : totalTickets.toString();
+  const ticketLabel = isEs
+    ? `entradas vendidas en tu ciudad`
+    : `tickets sold in your city`;
+
