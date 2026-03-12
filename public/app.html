@@ -817,18 +817,9 @@ function drawFlyer(artists, userName) {
   // Headliner: Aalto Display — fit to width but cap at 64px
   const h1text = day1[0]?.name.toUpperCase() || '';
   const h2text = day2[0]?.name.toUpperCase() || '';
-  const headSize = Math.min(
-    fit(h1text, maxW, 64, `?px AaltoDisplay, Anton, sans-serif`),
-    fit(h2text, maxW, 64, `?px AaltoDisplay, Anton, sans-serif`)
-  );
-
-  // Non-headliners: all same fixed size in Barlow Condensed
-  const t2d1 = day1.slice(1,4).map(a=>a.name.toUpperCase()).join(' - ');
-  const t2d2 = day2.slice(1,4).map(a=>a.name.toUpperCase()).join(' - ');
-  const nonHeadSize = Math.min(
-    t2d1 ? fit(t2d1, maxW, 54, `700 ?px ${FONT}`) : 54,
-    t2d2 ? fit(t2d2, maxW, 54, `700 ?px ${FONT}`) : 54
-  );
+  // Fixed sizes — consistent across all time ranges
+  const headSize    = 64;   // headliner
+  const nonHeadSize = 28;   // tier 2 & 3 (T3 wraps if needed via measureText)
 
   // Build T3 lines by measuring actual text widths at nonHeadSize
   const getT3Lines = (day) => {
