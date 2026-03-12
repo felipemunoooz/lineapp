@@ -822,36 +822,36 @@ function drawFlyer(artists, userName) {
   const headSize    = 64;   // headliner
   const nonHeadSize = 18;   // tier 2 & 3
 
-  // Build T3 lines by measuring actual text widths at nonHeadSize
-  const getT3Lines = (day) => {
-    const names = day.slice(4, 9).map(a => a.name.toUpperCase());
-    if (!names.length) return [];
-    ctx.font = `600 ${nonHeadSize}px ${FONT}`;
+  // Build secondary lines (tier2 + tier3) capped at 4 lines total per day
+  const MAX_SEC_LINES = 4;
+  const buildSecLines = (day) => {
+    ctx.font = `700 ${nonHeadSize}px ${FONT}`;
+    const allNames = day.slice(1).map(a => a.name.toUpperCase());
     const lines = [];
     let current = [];
-    names.forEach(name => {
+    for (const name of allNames) {
+      if (lines.length >= MAX_SEC_LINES) break;
       const test = [...current, name].join(' - ');
       if (current.length > 0 && ctx.measureText(test).width > maxW) {
-        lines.push(current);
+        lines.push(current.join(' - '));
         current = [name];
       } else {
         current.push(name);
       }
-    });
-    if (current.length) lines.push(current);
+    }
+    if (current.length && lines.length < MAX_SEC_LINES) lines.push(current.join(' - '));
     return lines;
   };
-  const secLines1 = getT3Lines(day1);
-  const secLines2 = getT3Lines(day2);
+  const secLines1 = buildSecLines(day1);
+  const secLines2 = buildSecLines(day2);
 
-  const dayHeight = (t3lines) => {
+  const dayHeight = (secLines) => {
     let h = headSize + 8;
-    h += nonHeadSize + GAP;
-    h += nonHeadSize * t3lines.length + GAP * t3lines.length;
+    h += (nonHeadSize + GAP) * secLines.length;
     return h;
   };
 
-  const drawDay = (dayArtists, t3lines, startY) => {
+  const drawDay = (dayArtists, secLines, startY) => {
     let y = startY;
   
     ctx.font = `${headSize}px AaltoDisplay, Anton, sans-serif`;
@@ -859,30 +859,10 @@ function drawFlyer(artists, userName) {
     ctx.fillText(dayArtists[0]?.name.toUpperCase() || '', cx, y);
     y += headSize + 8;
 
-    const t2names = dayArtists.slice(1,4).map(a => a.name.toUpperCase());
-    if (t2names.length) {
+    if (secLines.length) {
       ctx.font = `700 ${nonHeadSize}px ${FONT}`;
       ctx.fillStyle = CREAM; ctx.shadowBlur = 6;
-      // wrap tier 2 if names are long
-      const t2lines = [];
-      let t2cur = [];
-      t2names.forEach(name => {
-        const test = [...t2cur, name].join(' - ');
-        if (t2cur.length > 0 && ctx.measureText(test).width > maxW) {
-          t2lines.push(t2cur.join(' - ')); t2cur = [name];
-        } else { t2cur.push(name); }
-      });
-      if (t2cur.length) t2lines.push(t2cur.join(' - '));
-      t2lines.forEach(line => { ctx.fillText(line, cx, y); y += nonHeadSize + GAP; });
-    }
-
-    if (t3lines.length) {
-      ctx.font = `600 ${nonHeadSize}px ${FONT}`;
-      ctx.fillStyle = CREAM;
-      t3lines.forEach(line => {
-        ctx.fillText(line.join(' - '), cx, y);
-        y += nonHeadSize + GAP;
-      });
+      secLines.forEach(line => { ctx.fillText(line, cx, y); y += nonHeadSize + GAP; });
     }
 
 
