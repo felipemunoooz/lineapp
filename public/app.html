@@ -810,9 +810,10 @@ function drawFlyer(artists, userName) {
   ctx.letterSpacing = '-0.5px';
 
   // ── ARTISTS ───────────────────────────────
-  const half = Math.ceil(artists.length / 2);
-  const day1 = artists.slice(0, half);
-  const day2 = artists.slice(half);
+  const topArtists = artists.slice(0, 18);
+  const half = Math.ceil(topArtists.length / 2);
+  const day1 = topArtists.slice(0, half);
+  const day2 = topArtists.slice(half);
 
   // Headliner: Aalto Display — fit to width but cap at 64px
   const h1text = day1[0]?.name.toUpperCase() || '';
