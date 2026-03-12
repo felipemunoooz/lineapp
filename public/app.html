@@ -763,7 +763,7 @@ function drawFlyer(artists, userName) {
   const cx      = CW / 2;
   const pad     = CW * 0.055;
   const maxW    = CW - pad * 2;
-  const GAP     = 8;    // between lines within a day
+  const GAP     = 4;    // between lines within a day
   const DAY_GAP = 32;   // between day 1 and day 2
   const FONT    = 'Barlow Condensed, sans-serif';
 
@@ -819,7 +819,7 @@ function drawFlyer(artists, userName) {
   const h2text = day2[0]?.name.toUpperCase() || '';
   // Fixed sizes — consistent across all time ranges
   const headSize    = 64;   // headliner
-  const nonHeadSize = 22;   // tier 2 & 3
+  const nonHeadSize = 18;   // tier 2 & 3
 
   // Build T3 lines by measuring actual text widths at nonHeadSize
   const getT3Lines = (day) => {
