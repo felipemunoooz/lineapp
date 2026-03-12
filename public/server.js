@@ -9,7 +9,7 @@ const PORT = 3000;
 
 const CLIENT_ID     = 'ccaabd097b914790934ac89fbaddd9ce';
 const CLIENT_SECRET = 'bf71b2541d944fdda09d841c00d7daed';
-const REDIRECT_URI  = process.env.REDIRECT_URI || 'https://lineapp.club/auth/callback';
+const REDIRECT_URI  = process.env.REDIRECT_URI || 'https://www.lineapp.club/callback';
 
 app.use(cors());
 app.use(express.json());
