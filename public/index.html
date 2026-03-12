@@ -522,5 +522,23 @@ function applyLang() {
 }
 applyLang();
 </script>
+
+<script>
+(function() {
+  const lang = (navigator.language || 'es').startsWith('es') ? 'es' : (navigator.language || '').startsWith('pt') ? 'pt' : 'en';
+  const items = lang === 'es'
+    ? ['LINEAPP','TU FESTIVAL PERFECTO','GENERA TU FLYER','COMPARTE EN INSTAGRAM']
+    : lang === 'pt'
+    ? ['LINEAPP','SEU FESTIVAL PERFEITO','CRIE SEU FLYER','COMPARTILHE NO INSTAGRAM']
+    : ['LINEAPP','YOUR PERFECT FESTIVAL','GENERATE YOUR FLYER','SHARE ON INSTAGRAM'];
+  const track = document.getElementById('marqueeTrack');
+  if (track) {
+    const html = [...items,...items].map((t,i) =>
+      `<span${i%2===0?' class="hi"':''}>${t}</span><span>✦</span>`
+    ).join('');
+    track.innerHTML = html;
+  }
+})();
+</script>
 </body>
 </html>

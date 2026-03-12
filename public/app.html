@@ -530,7 +530,7 @@ body::before {
     <div class="l-vinyl-dot"></div>
   </div>
   <div class="l-status" id="loadSub">
-    Conectando con Spotify
+    <span id="loadText">Conectando con Spotify</span>
     <span class="l-dots"><span></span><span></span><span></span></span>
   </div>
 
@@ -571,7 +571,7 @@ body::before {
       </div>
       <button class="btn-logout" onclick="logout()">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-  Salir
+  <span id="logoutLabel">Salir</span>
 </button>
     </div>
   </div>
@@ -584,7 +584,7 @@ body::before {
       <div class="flyer-btns">
         <button class="flyer-btn flyer-btn-outline" onclick="shareInstagram()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-          <span id="shareLabel">Compartir</span>
+          <span id="shareLabel">Share</span>
         </button>
         <button class="flyer-btn flyer-btn-solid" onclick="downloadFlyer()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -595,20 +595,20 @@ body::before {
 
     <div class="right-panel">
       <div class="time-pills">
-        <button class="tpill" onclick="setRange('short_term',this)">1 mes</button>
-        <button class="tpill active" onclick="setRange('medium_term',this)">6 meses</button>
-        <button class="tpill" onclick="setRange('long_term',this)">Todo</button>
+        <button class="tpill" onclick="setRange('short_term',this)" id="pill1"></button>
+        <button class="tpill active" onclick="setRange('medium_term',this)" id="pill2"></button>
+        <button class="tpill" onclick="setRange('long_term',this)" id="pill3"></button>
       </div>
       <div class="card insights-card">
         <div class="card-label" id="roastLabel">Music Insights</div>
         <div id="genreDiv"><div class="empty">Analizando tu música...</div></div>
       </div>
       <div class="card concert-card card-fill">
-        <div class="card-label">Conciertos cercanos</div>
+        <div class="card-label" id="concertLabel">Conciertos cercanos</div>
         <div class="city-row">
           <div class="city-ac-wrap">
             <input class="city-in" id="cityIn" 
-              placeholder="📍 Tu ciudad (ej: Bogotá)"
+              placeholder="📍 Tu ciudad (ej: Bogotá)" id="cityInput"
               autocomplete="off"
               oninput="acFilter(this.value)"
               onkeydown="acKey(event)">
@@ -618,7 +618,7 @@ body::before {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           </button>
         </div>
-        <div id="concertDiv"><div class="empty">Ingresa tu ciudad para ver<br>conciertos de tus artistas</div></div>
+        <div id="concertDiv"><div class="empty" id="concertEmpty">Ingresa tu ciudad para ver<br>conciertos de tus artistas</div></div>
       </div>
 
     </div>
@@ -801,7 +801,7 @@ function drawFlyer(artists, userName) {
 
   // ── PILL ──────────────────────────────────
   ctx.letterSpacing = '0px';
-  const pillText  = 'Crea el tuyo en www.lineapp.club';
+  const pillText  = isPageEs ? 'Crea el tuyo en www.lineapp.club' : isPagePt ? 'Crie o seu em www.lineapp.club' : 'Create yours at www.lineapp.club';
   const pillFontS = 15;
   ctx.font        = `600 ${pillFontS}px ${FONT}`;
   const pillTW    = ctx.measureText(pillText).width;
@@ -1085,7 +1085,7 @@ async function init() {
 }
 
 function setSub(t) {
-  document.getElementById('loadSub').innerHTML = t +
+  document.getElementById('loadSub').innerHTML = (isPageEs ? t : isPagePt ? t : t) +
     ' <span class="l-dots"><span></span><span></span><span></span></span>';
 }
 
@@ -1119,6 +1119,10 @@ function buildAll() {
 // ── Music Insights ──
 let insightsArtists = [];
 let insightsLang = 'es';
+const pageLang = (navigator.language || 'es').startsWith('es') ? 'es' : (navigator.language || '').startsWith('pt') ? 'pt' : 'en';
+const isPageEs = pageLang === 'es';
+const isPagePt = pageLang === 'pt';
+const isPageEn = !isPageEs && !isPagePt;
 
 function insightsComputeLocal(artistList) {
   // Compute local stats from artist genres
@@ -1176,13 +1180,18 @@ async function buildGenrePanel() {
   const ticketLabel = isEs
     ? `serían vendidos para este festival`
     : `tickets would be sold for this festival`;
+  const tierNames = isEs
+    ? ['Rango D','Rango C','Rango B','Rango A']
+    : isPt
+    ? ['Nível D','Nível C','Nível B','Nível A']
+    : ['Tier D','Tier C','Tier B','Tier A'];
   const tierData = totalTickets <= 5000
-    ? { emoji:'🏚️', name:'Rango D', color:'#94a3b8' }
+    ? { emoji:'🏚️', name:tierNames[0], color:'#94a3b8' }
     : totalTickets <= 30000
-    ? { emoji:'🎪', name:'Rango C', color:'#3b82f6' }
+    ? { emoji:'🎪', name:tierNames[1], color:'#3b82f6' }
     : totalTickets <= 150000
-    ? { emoji:'⚡', name:'Rango B', color:'#f59e0b' }
-    : { emoji:'👑', name:'Rango A', color:'#583EFF' };
+    ? { emoji:'⚡', name:tierNames[2], color:'#f59e0b' }
+    : { emoji:'👑', name:tierNames[3], color:'#583EFF' };
 
   // Chaos label
   const chaosLabel = stats.chaosScore > 70
@@ -1219,12 +1228,12 @@ async function buildGenrePanel() {
     }
   ] : [
     {
-      icon: diamondSvg, label: 'Rareza',
+      icon: diamondSvg, label: 'Rarity',
       value: rarityLabel,
       sub: stats.rarityScore > 60 ? 'Nobody else would make this lineup' : 'Recognizable but with character',
     },
     {
-      icon: boltSvg, label: 'Energía',
+      icon: boltSvg, label: 'Energy',
       value: stats.heavyCount > 2 ? 'Mosh pit' : stats.mainstreamCount > 3 ? 'Singalong' : 'Emotional journey',
       sub: stats.heavyCount > 0 && stats.mainstreamCount > 0 ? `${stats.heavyCount} pit artists, ${stats.mainstreamCount} main stage` : `${insightsArtists.length} artists, ${stats.uniqueGenres} moods`,
     }
@@ -1387,6 +1396,34 @@ document.getElementById('cityIn').addEventListener('keydown', e => {
   if (e.key === 'Enter') fetchConcerts(e.target.value.trim());
 });
 
+
+function initI18n() {
+  const es = isPageEs, pt = isPagePt;
+  // Tabs
+  document.getElementById('pill1').textContent = es ? '1 mes' : pt ? '1 mês' : '1 month';
+  document.getElementById('pill2').textContent = es ? '6 meses' : pt ? '6 meses' : '6 months';
+  document.getElementById('pill3').textContent = es ? 'Todo' : pt ? 'Tudo' : 'All time';
+  // Logout
+  // Loader
+  const lt = document.getElementById('loadText');
+  if (lt) lt.textContent = es ? 'Conectando con Spotify' : pt ? 'Conectando com Spotify' : 'Connecting to Spotify';
+  const ll = document.getElementById('logoutLabel');
+  if (ll) ll.textContent = es ? 'Salir' : pt ? 'Sair' : 'Log out';
+  // Share button
+  const sl = document.getElementById('shareLabel');
+  if (sl) sl.textContent = navigator.share ? (es ? 'Compartir' : pt ? 'Compartilhar' : 'Share') : (es ? 'Descargar' : pt ? 'Baixar' : 'Download');
+  // Concert card
+  const cl = document.getElementById('concertLabel');
+  if (cl) cl.textContent = es ? 'Conciertos cercanos' : pt ? 'Shows próximos' : 'Nearby Concerts';
+  // Concert empty
+  const ce = document.getElementById('concertEmpty');
+  if (ce) ce.innerHTML = es ? 'Ingresa tu ciudad para ver<br>conciertos de tus artistas' : pt ? 'Digite sua cidade para ver<br>shows dos seus artistas' : 'Enter your city to see<br>concerts from your artists';
+  // City placeholder
+  const ci = document.getElementById('cityInput');
+  if (ci) ci.placeholder = es ? '📍 Tu ciudad (ej: Bogotá)' : pt ? '📍 Sua cidade (ex: São Paulo)' : '📍 Your city (e.g. New York)';
+}
+
+initI18n();
 init();
 </script>
 </body>
