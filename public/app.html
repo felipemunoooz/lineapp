@@ -756,6 +756,20 @@ function splitIntoLines(ctx, names, maxW) {
 // ══════════════════════════════════════════
 //  DRAW FLYER — Aalto + Barlow Condensed
 // ══════════════════════════════════════════
+
+function makeFestName(firstName) {
+  const n = firstName.toLowerCase().replace(/[^a-záéíóúñ]/gi, '');
+  if (n.length <= 3) return n.toUpperCase() + 'FEST';
+  // Try to find a natural cut: first syllable or first 4 chars
+  const vowels = 'aeiouáéíóú';
+  let cut = 4;
+  // Walk forward until we hit a vowel then stop after it
+  for (let i = 2; i < Math.min(n.length - 1, 6); i++) {
+    if (vowels.includes(n[i])) { cut = i + 1; break; }
+  }
+  const prefix = n.slice(0, cut);
+  return (prefix + 'FEST').toUpperCase();
+}
 function drawFlyer(artists, userName) {
   const canvas = document.getElementById('flyerCanvas');
   const DPR    = 2;
@@ -792,7 +806,7 @@ function drawFlyer(artists, userName) {
   ctx.letterSpacing = '-0.5px';
 
   // ── FESTIVAL NAME ─────────────────────────
-  const festName  = 'LINEAPP FESTIVAL';
+  const festName  = makeFestName(userName.split(' ')[0]);
   const titleY    = CH * 0.07;  // more top padding
   const titleSize = fit(festName, maxW, 82, `?px AaltoDisplay, Anton, sans-serif`);
   ctx.font        = `${titleSize}px AaltoDisplay, Anton, sans-serif`;
