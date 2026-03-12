@@ -819,7 +819,7 @@ function drawFlyer(artists, userName) {
   const h2text = day2[0]?.name.toUpperCase() || '';
   // Fixed sizes — consistent across all time ranges
   const headSize    = 64;   // headliner
-  const nonHeadSize = 28;   // tier 2 & 3 (T3 wraps if needed via measureText)
+  const nonHeadSize = 34;   // tier 2 & 3
 
   // Build T3 lines by measuring actual text widths at nonHeadSize
   const getT3Lines = (day) => {
@@ -862,8 +862,17 @@ function drawFlyer(artists, userName) {
     if (t2names.length) {
       ctx.font = `700 ${nonHeadSize}px ${FONT}`;
       ctx.fillStyle = CREAM; ctx.shadowBlur = 6;
-      ctx.fillText(t2names.join(' - '), cx, y);
-      y += nonHeadSize + GAP;
+      // wrap tier 2 if names are long
+      const t2lines = [];
+      let t2cur = [];
+      t2names.forEach(name => {
+        const test = [...t2cur, name].join(' - ');
+        if (t2cur.length > 0 && ctx.measureText(test).width > maxW) {
+          t2lines.push(t2cur.join(' - ')); t2cur = [name];
+        } else { t2cur.push(name); }
+      });
+      if (t2cur.length) t2lines.push(t2cur.join(' - '));
+      t2lines.forEach(line => { ctx.fillText(line, cx, y); y += nonHeadSize + GAP; });
     }
 
     if (t3lines.length) {
