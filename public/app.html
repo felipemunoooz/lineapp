@@ -573,8 +573,8 @@ body::before {
       <canvas id="flyerCanvas"></canvas>
       <div class="flyer-btns">
         <button class="flyer-btn flyer-btn-outline" onclick="shareInstagram()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-          Instagram Story
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          <span id="shareLabel">Compartir</span>
         </button>
         <button class="flyer-btn flyer-btn-solid" onclick="downloadFlyer()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -1318,9 +1318,8 @@ function shareInstagram() {
       setTimeout(() => alert('📸 Imagen descargada. Ábrela desde Instagram > Historias > Galería'), 500);
     });
   } else {
-    // Desktop: download + instructions
+    // Desktop: just download
     downloadFlyer();
-    setTimeout(() => alert('📸 Imagen descargada. En Instagram, ve a Historias y selecciónala desde tu galería.'), 500);
   }
 }
 
